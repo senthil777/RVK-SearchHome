@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MyApp Auth Tester</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Arial, sans-serif;
+        background: #f6f7f9;
+        color: #1d2430;
+      }
+
+      body {
+        margin: 0;
+        padding: 24px;
+      }
+
+      main {
+        max-width: 980px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin: 0 0 18px;
+        font-size: 28px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
+      }
+
+      form,
+      .panel {
+        background: #ffffff;
+        border: 1px solid #dfe3ea;
+        border-radius: 8px;
+        padding: 16px;
+      }
+
+      h2 {
+        margin: 0 0 12px;
+        font-size: 18px;
+      }
+
+      label {
+        display: block;
+        margin-top: 10px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      input {
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 5px;
+        padding: 10px;
+        border: 1px solid #cbd2dc;
+        border-radius: 6px;
+        font-size: 14px;
+      }
+
+      button {
+        margin-top: 14px;
+        padding: 10px 14px;
+        border: 0;
+        border-radius: 6px;
+        background: #2563eb;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      button.secondary {
+        background: #374151;
+      }
+
+      pre {
+        min-height: 180px;
+        overflow: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+        background: #111827;
+        color: #e5e7eb;
+        border-radius: 8px;
+        padding: 14px;
+      }
+
+      .token {
+        font-size: 12px;
+        color: #4b5563;
+        word-break: break-all;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>MyApp Auth Tester</h1>
+
+      <div class="grid">
+        <form id="registerForm">
+          <h2>Register</h2>
+          <label>Name</label>
+          <input name="name" value="Ravi Kumar" required />
+          <label>Email</label>
+          <input name="email" type="email" value="ravi@example.com" required />
+          <label>Password</label>
+          <input name="password" type="password" value="StrongPass123!" required />
+          <button type="submit">Register</button>
+        </form>
+
+        <form id="loginForm">
+          <h2>Login</h2>
+          <label>Email</label>
+          <input name="email" type="email" value="ravi@example.com" required />
+          <label>Password</label>
+          <input name="password" type="password" value="StrongPass123!" required />
+          <button type="submit">Login</button>
+        </form>
+
+        <form id="forgotForm">
+          <h2>Forgot Password</h2>
+          <label>Email</label>
+          <input name="email" type="email" value="ravi@example.com" required />
+          <button type="submit">Generate Reset Token</button>
+        </form>
+
+        <form id="resetForm">
+          <h2>Reset Password</h2>
+          <label>Reset Token</label>
+          <input name="token" placeholder="Paste token from forgot password response" required />
+          <label>New Password</label>
+          <input name="newPassword" type="password" value="NewStrongPass123!" required />
+          <button type="submit">Reset Password</button>
+        </form>
+
+        <div class="panel">
+          <h2>Current JWT</h2>
+          <p id="tokenPreview" class="token">No token yet.</p>
+          <button id="meButton" class="secondary" type="button">Call /users/me</button>
+          <button id="clearButton" class="secondary" type="button">Clear Token</button>
+        </div>
+
+        <div class="panel">
+          <h2>Response</h2>
+          <pre id="output">Ready.</pre>
+        </div>
+      </div>
+    </main>
+
+    <script src="/auth-test.js"></script>
+  </body>
+</html>
