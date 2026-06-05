@@ -11,6 +11,8 @@ import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
+import LoginScreen from './src/screens/LoginScreen';
+
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -18,7 +20,7 @@ function App() {
   return (
     <SafeAreaProvider>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
+      <LoginScreen />
     </SafeAreaProvider>
   );
 }
