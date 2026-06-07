@@ -1,6 +1,30 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Camera access (take photo) -->
+  <uses-permission android:name="android.permission.CAMERA" />
+
+  <!-- Android 13+ (API 33+): read images only -->
+  <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+  <!-- Android 12 and below: general storage read -->
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    android:maxSdkVersion="32" />
+
+  <!-- Write storage — only needed if saving images to device -->
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    android:maxSdkVersion="29" />
+
+  <!-- ─────────────────────────────────────────────
+       INTERNET PERMISSION
+       Required for API calls (login, signup, etc.)
+  ───────────────────────────────────────────── -->
+  <uses-permission android:name="android.permission.INTERNET" />
+
+  <!-- ─────────────────────────────────────────────
+       NETWORK STATE
+       Optional — check connection before API calls
+  ───────────────────────────────────────────── -->
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
       android:name=".MainApplication"
