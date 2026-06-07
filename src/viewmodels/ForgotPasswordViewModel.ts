@@ -1,18 +1,16 @@
 import { useState, useCallback } from 'react';
-import { loginApi } from '../services/AuthService';
-import { LoginModel, ApiResponse } from '../models/AuthModel';
+import { forgotPasswordApi } from '../services/AuthService';
+import { ForgotPasswordModel, ApiResponse } from '../models/AuthModel';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MIN_PASSWORD_LENGTH = 6;
 
-export const useLoginViewModel = () => {
+export const useForgotPasswordViewModel = () => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const login = useCallback(async () => {
+  const submitForgotPassword = useCallback(async () => {
     if (loading) return;
 
     setError(null);
@@ -28,41 +26,36 @@ export const useLoginViewModel = () => {
       return;
     }
 
-    if (!password) {
-      setError('Please enter your password.');
-      return;
-    }
-
-    if (password.length < MIN_PASSWORD_LENGTH) {
-      setError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
-      return;
-    }
-
-    const credentials: LoginModel = {
+    const payload: ForgotPasswordModel = {
       email: email.trim().toLowerCase(),
-      password,
     };
 
     try {
       setLoading(true);
-      const response: ApiResponse = await loginApi(credentials);
+      const response: ApiResponse = await forgotPasswordApi(payload);
       setSuccessMessage(response.message);
+      setEmail('');
     } catch (err) {
       const apiError = err as ApiResponse;
       setError(apiError.message ?? 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
-  }, [email, password, loading]);
+  }, [email, loading]);
+
+  const resetState = useCallback(() => {
+    setEmail('');
+    setError(null);
+    setSuccessMessage(null);
+  }, []);
 
   return {
     email,
-    password,
     loading,
     error,
     successMessage,
     setEmail,
-    setPassword,
-    login,
+    submitForgotPassword,
+    resetState,
   };
 };
