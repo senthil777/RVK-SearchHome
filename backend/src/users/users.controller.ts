@@ -1,4 +1,4 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOkResponse,
@@ -6,7 +6,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserResponseDto } from '../auth/dto/auth-response.dto';
 import { UsersService } from './users.service';
@@ -35,5 +35,29 @@ export class UsersController {
   @ApiUnauthorizedResponse({ description: 'Missing, expired, or invalid JWT.' })
   getMe(@Req() request: AuthenticatedRequest) {
     return this.usersService.toPublicUser(request.user);
+  }
+
+  /** DEV ONLY — lists all in-memory users as a plain HTML table */
+  @Get('all')
+  @ApiOperation({ summary: '[DEV] List all users (memory mode only)' })
+  getAllUsers(@Req() req: any, @Res() res: Response) {
+    const users = this.usersService.getAllUsers();
+    const rows = users
+      .map(
+        (u, i) =>
+          `<tr><td>${i + 1}</td><td>${u.id}</td><td>${u.name}</td><td>${u.email}</td><td>${u.createdAt.toISOString()}</td></tr>`,
+      )
+      .join('');
+    res.setHeader('Content-Type', 'text/html');
+    res.send(`<!DOCTYPE html><html><head><meta charset="utf-8"/><title>Users</title>
+<style>body{font-family:Arial,sans-serif;padding:24px;background:#f6f7f9}
+h1{margin:0 0 16px}table{border-collapse:collapse;width:100%}
+th,td{border:1px solid #ddd;padding:10px 14px;text-align:left}
+th{background:#2563eb;color:#fff}tr:nth-child(even){background:#f0f4ff}
+</style></head><body>
+<h1>👥 Users (${users.length})</h1>
+<table><thead><tr><th>#</th><th>ID</th><th>Name</th><th>Email</th><th>Created At</th></tr></thead>
+<tbody>${rows || '<tr><td colspan="5">No users found</td></tr>'}</tbody></table>
+</body></html>`);
   }
 }

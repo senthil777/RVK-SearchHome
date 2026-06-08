@@ -93,6 +93,11 @@ export class UsersService {
     return this.storageProvider.toLowerCase() === 'memory';
   }
 
+  getAllUsers(): AppUser[] {
+    return this.users;
+  }
+
+
   toPublicUser(user: AppUser) {
     return {
       id: user.id,
