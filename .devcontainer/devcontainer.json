@@ -1,18 +1,10 @@
 {
   "name": "Node.js Backend Codespace",
-  "forwardPorts": [3000],
   
-  "portsAttributes": {
-    "3000": {
-      "label": "Backend Dev Server",
-      "onAutoForward": "notify",
-      "visibility": "public"
-    }
-  },
 
   // 1. Installs modules once during container creation/rebuild
   "updateContentCommand": "cd backend && npm install",
 
   // 2. Starts server, waits for port 3000 to active, then forces it to PUBLIC
-  "postStartCommand": "cd backend && npm run start:dev & (while ! nc -z localhost 3000; do sleep 1; done; gh codespace ports visibility 3000:public -c $CODESPACE_NAME)"
+  "postStartCommand": "cd backend && npm run start:dev & "
 }
