@@ -1,0 +1,18 @@
+{
+  "name": "Node.js Backend Codespace",
+  "forwardPorts": [3000],
+  
+  "portsAttributes": {
+    "3000": {
+      "label": "Backend Dev Server",
+      "onAutoForward": "notify",
+      "visibility": "public"
+    }
+  },
+
+  // 1. Runs ONCE when the codespace is first built (saves heavy lifting)
+  "updateContentCommand": "cd backend && npm install",
+
+  // 2. Runs EVERY TIME the switch flips to ON (fast startup)
+  "postStartCommand": "cd backend && npm run start:dev"
+}
