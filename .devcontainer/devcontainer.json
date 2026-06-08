@@ -10,9 +10,9 @@
     }
   },
 
-  // 1. Runs ONCE when the codespace is first built (saves heavy lifting)
+  // 1. Installs your modules once during a build
   "updateContentCommand": "cd backend && npm install",
 
-  // 2. Runs EVERY TIME the switch flips to ON (fast startup)
-  "postStartCommand": "cd backend && npm run start:dev"
+  // 2. The crucial fix: Added " &" at the end so it doesn't freeze the boot process
+  "postStartCommand": "cd backend && npm run start:dev &"
 }
