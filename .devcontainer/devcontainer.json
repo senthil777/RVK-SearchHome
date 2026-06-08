@@ -6,5 +6,15 @@
   "updateContentCommand": "cd backend && npm install",
 
   // 2. Starts server, waits for port 3000 to active, then forces it to PUBLIC
-  "postStartCommand": "cd backend && npm run start:dev & "
+  "postStartCommand": "cd backend && npm run start:dev & " ,
+
+  "forwardPorts": [3000],
+  
+  "portsAttributes": {
+    "3000": {
+      "label": "Backend Dev Server",
+      "onAutoForward": "notify",
+      "visibility": "public"
+    }
+  },
 }
