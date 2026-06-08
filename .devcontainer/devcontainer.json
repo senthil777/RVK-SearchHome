@@ -12,6 +12,8 @@
     }
   },
 
-  // Runs your commands every single time the codespace is switched ON/started
-  "postStartCommand": "cd backend && npm install && npm run start:dev"
+"updateContentCommand": "cd backend && npm install",
+
+  // 2. Daily routine happens instantly (When you use your HTML switch)
+  "postStartCommand": "cd backend && npm run start:dev"
 }
