@@ -97,6 +97,10 @@
         color: #4b5563;
         word-break: break-all;
       }
+
+      .full {
+        grid-column: 1 / -1;
+      }
     </style>
   </head>
   <body>
@@ -104,6 +108,18 @@
       <h1>MyApp Auth Tester</h1>
 
       <div class="grid">
+        <div class="panel full">
+          <h2>API Base URL</h2>
+          <label for="apiBaseUrl">Backend URL</label>
+          <input
+            id="apiBaseUrl"
+            value="https://super-goldfish-77v7p57gj6rx275v-3000.app.github.dev"
+            spellcheck="false"
+          />
+          <button id="saveApiUrlButton" class="secondary" type="button">Save URL</button>
+          <p class="token">Requests will be sent to this host, then stored in your browser.</p>
+        </div>
+
         <form id="registerForm">
           <h2>Register</h2>
           <label>Name</label>

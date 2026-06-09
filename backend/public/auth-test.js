@@ -1,8 +1,15 @@
 const output = document.getElementById('output');
 const tokenPreview = document.getElementById('tokenPreview');
+const apiBaseUrlInput = document.getElementById('apiBaseUrl');
+const saveApiUrlButton = document.getElementById('saveApiUrlButton');
+const storageApiBaseUrlKey = 'myapp_api_base_url';
 let accessToken = localStorage.getItem('myapp_access_token') || '';
+let apiBaseUrl = localStorage.getItem(storageApiBaseUrlKey) || apiBaseUrlInput.value.trim();
+
+apiBaseUrlInput.value = apiBaseUrl;
 
 updateTokenPreview();
+updateBaseUrlPreview();
 
 document.getElementById('registerForm').addEventListener('submit', (event) => {
   event.preventDefault();
@@ -38,6 +45,13 @@ document.getElementById('clearButton').addEventListener('click', () => {
   output.textContent = 'Token cleared.';
 });
 
+saveApiUrlButton.addEventListener('click', () => {
+  apiBaseUrl = apiBaseUrlInput.value.trim().replace(/\/+$/, '');
+  localStorage.setItem(storageApiBaseUrlKey, apiBaseUrl);
+  updateBaseUrlPreview();
+  output.textContent = `Saved API base URL: ${apiBaseUrl}`;
+});
+
 function formData(form) {
   return Object.fromEntries(new FormData(form).entries());
 }
@@ -58,7 +72,7 @@ async function submitJson(path, body, saveToken) {
 
 async function request(path, options) {
   try {
-    const response = await fetch(path, options);
+    const response = await fetch(buildUrl(path), options);
     const contentType = response.headers.get('content-type') || '';
     const data = contentType.includes('application/json')
       ? await response.json()
@@ -87,4 +101,14 @@ function authHeaders() {
 
 function updateTokenPreview() {
   tokenPreview.textContent = accessToken || 'No token yet.';
+}
+
+function updateBaseUrlPreview() {
+  apiBaseUrlInput.value = apiBaseUrl;
+}
+
+function buildUrl(path) {
+  const base = apiBaseUrl.replace(/\/+$/, '');
+  const suffix = path.startsWith('/') ? path : `/${path}`;
+  return `${base}${suffix}`;
 }
