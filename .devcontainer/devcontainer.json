@@ -4,8 +4,8 @@
   // 1. Installs modules once during container creation/rebuild
   "updateContentCommand": "cd backend && npm install",
 
-  // 2. Starts server, WAITS for port 3000 to wake up, then FORCES it to public using GitHub CLI
-  "postStartCommand": "cd backend && npm run start:dev & (while ! nc -z localhost 3000; do sleep 1; done && GITHUB_TOKEN=$GITHUB_TOKEN gh codespace ports visibility 3000:public -c $CODESPACE_NAME)",
+  // 2. Fixed Syntax: Both commands are completely backgrounded so the boot ends instantly
+  "postStartCommand": "(cd backend && npm run start:dev &); (while ! nc -z localhost 3000; do sleep 1; done && GITHUB_TOKEN=$GITHUB_TOKEN gh codespace ports visibility 3000:public -c $CODESPACE_NAME) &",
 
   "forwardPorts": [3000],
   
