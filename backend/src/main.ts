@@ -12,7 +12,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
 
-  // Modified Helmet for Development: Allows Swagger inline scripts to execute
+  // Modified Helmet for Development: Disables CSP so your browser won't strip Swagger UI styles
   app.use(
     helmet({
       contentSecurityPolicy: false,
@@ -21,10 +21,12 @@ async function bootstrap() {
 
   app.useStaticAssets(join(process.cwd(), 'public'));
   
-  // CORS updated to handle dynamic environments like GitHub Codespaces smoothly
+  // 🟢 FIXED CORS: Explicitly whitelists Authorization headers coming from your local file panel
   app.enableCors({
-    origin: parseCorsOrigins(configService.get<string>('CORS_ORIGIN')),
+    origin: true, // Dynamically accepts your local development page origin
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
   });
 
   app.useGlobalPipes(
@@ -50,13 +52,13 @@ async function bootstrap() {
     swaggerOptions: { 
       persistAuthorization: true,
     },
-    // Fixes the asset paths inside reverse proxies like Codespaces
+    // Preserves relative assets routing via proxy chains
     useGlobalPrefix: true, 
   });
 
   const port = configService.get<number>('PORT') ?? 3000;
   
-  // 🟢 CRITICAL FIX: Added '0.0.0.0' to bind the network host interface globally
+  // 🟢 Binds the network host interface globally to 0.0.0.0
   await app.listen(port, '0.0.0.0');
   console.log(`🚀 NestJS application is listening globally on port ${port}`);
 }
