@@ -1,18 +1,15 @@
 {
   "name": "Node.js Backend Codespace",
 
-  // 1. Installs modules once during container creation/rebuild
-  "updateContentCommand": "cd backend && npm install",
+  "postCreateCommand": "npm config set cache ~/.npm-cache --global && cd backend && npm ci",
 
-  // 2. Fixed Syntax: Both commands are completely backgrounded so the boot ends instantly
-  "postStartCommand": "(cd backend && npm run start:dev &); (while ! nc -z localhost 3000; do sleep 1; done && GITHUB_TOKEN=$GITHUB_TOKEN gh codespace ports visibility 3000:public -c $CODESPACE_NAME) &",
+  "postStartCommand": "cd backend && npm run start:dev",
 
   "forwardPorts": [3000],
-  
+
   "portsAttributes": {
     "3000": {
       "label": "Backend Dev Server",
-      "onAutoForward": "notify",
       "visibility": "public"
     }
   }
