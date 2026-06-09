@@ -13,7 +13,7 @@
 
   "postCreateCommand": "cd backend && npm install",
 
-  "postStartCommand": "sudo service postgresql start && sudo -u postgres psql -c \"ALTER USER postgres WITH PASSWORD 'postgres';\" && sudo -u postgres psql -tc \"SELECT 1 FROM pg_database WHERE datname='myapp'\" | grep -q 1 || sudo -u postgres createdb myapp && cd backend && npx prisma db push",
+  "postStartCommand": "sudo service postgresql start && sudo -u postgres psql -c \"ALTER USER postgres WITH PASSWORD 'postgres';\" && sudo -u postgres psql -tc \"SELECT 1 FROM pg_database WHERE datname='myapp'\" | grep -q 1 || sudo -u postgres createdb myapp && cd backend && npx prisma db push && npm run start:dev",
 
   "forwardPorts": [3000, 5432, 5555],
 
