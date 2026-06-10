@@ -4,11 +4,17 @@ export class UserResponseDto {
   @ApiProperty({ example: 'f20ed8ac-3c58-45f4-9a2e-9f61f3a4c1e6' })
   id: string;
 
-  @ApiProperty({ example: 'Ravi Kumar' })
-  name: string;
+  @ApiProperty({ example: 'Ravi' })
+  firstName: string;
+
+  @ApiProperty({ example: 'Kumar' })
+  lastName: string;
 
   @ApiProperty({ example: 'ravi@example.com' })
   email: string;
+
+  @ApiProperty({ example: '123 Main St, Bangalore' })
+  address: string;
 
   @ApiProperty({ example: '2026-06-04T10:30:00.000Z' })
   createdAt: Date;

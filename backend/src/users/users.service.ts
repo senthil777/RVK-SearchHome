@@ -6,8 +6,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 
 export type AppUser = {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
+  address: string;
   password: string;
   createdAt: Date;
   updatedAt: Date;
@@ -31,8 +33,10 @@ export class UsersService {
       const now = new Date();
       const user: AppUser = {
         id: randomUUID(),
-        name: dto.name,
+        firstName: dto.firstName,
+        lastName: dto.lastName,
         email: dto.email,
+        address: dto.address,
         password: dto.password,
         createdAt: now,
         updatedAt: now,
@@ -101,8 +105,10 @@ export class UsersService {
   toPublicUser(user: AppUser) {
     return {
       id: user.id,
-      name: user.name,
+      firstName: user.firstName,
+      lastName: user.lastName,
       email: user.email,
+      address: user.address,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };

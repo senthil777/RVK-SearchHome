@@ -50,8 +50,10 @@ export class AuthService {
 
     const password = await bcrypt.hash(dto.password, BCRYPT_ROUNDS);
     const user = await this.usersService.create({
-      name: dto.name.trim(),
+      firstName: dto.firstName.trim(),
+      lastName: dto.lastName.trim(),
       email,
+      address: dto.address.trim(),
       password,
     });
 

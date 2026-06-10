@@ -14,8 +14,10 @@ import { UsersService } from './users.service';
 type AuthenticatedRequest = Request & {
   user: {
     id: string;
-    name: string;
+    firstName: string;
+    lastName: string;
     email: string;
+    address: string;
     password: string;
     createdAt: Date;
     updatedAt: Date;
@@ -45,7 +47,7 @@ export class UsersController {
     const rows = users
       .map(
         (u, i) =>
-          `<tr><td>${i + 1}</td><td>${u.id}</td><td>${u.name}</td><td>${u.email}</td><td>${u.createdAt.toISOString()}</td></tr>`,
+          `<tr><td>${i + 1}</td><td>${u.id}</td><td>${u.firstName}</td><td>${u.lastName}</td><td>${u.email}</td><td>${u.address}</td><td>${u.createdAt.toISOString()}</td></tr>`,
       )
       .join('');
     res.setHeader('Content-Type', 'text/html');
@@ -56,8 +58,8 @@ th,td{border:1px solid #ddd;padding:10px 14px;text-align:left}
 th{background:#2563eb;color:#fff}tr:nth-child(even){background:#f0f4ff}
 </style></head><body>
 <h1>👥 Users (${users.length})</h1>
-<table><thead><tr><th>#</th><th>ID</th><th>Name</th><th>Email</th><th>Created At</th></tr></thead>
-<tbody>${rows || '<tr><td colspan="5">No users found</td></tr>'}</tbody></table>
+<table><thead><tr><th>#</th><th>ID</th><th>First Name</th><th>Last Name</th><th>Email</th><th>Address</th><th>Created At</th></tr></thead>
+<tbody>${rows || '<tr><td colspan="7">No users found</td></tr>'}</tbody></table>
 </body></html>`);
   }
 }
