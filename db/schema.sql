@@ -2,9 +2,11 @@ create extension if not exists "pgcrypto";
 
 create table if not exists public.users (
   id uuid primary key default gen_random_uuid(),
-  name text not null,
+  first_name text not null,
+  last_name text not null,
   email text not null unique,
   password text not null,
+  address text not null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
