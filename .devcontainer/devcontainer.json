@@ -6,8 +6,8 @@
       "version": "20"
     }
   },
-  "postCreateCommand": "cd backend && npm install",
-  "postStartCommand": "cd backend && npx prisma db push",
+ "postCreateCommand": "cd backend && npm install && chmod +x node_modules/.bin/*",
+  "postStartCommand": "cd backend && npx prisma db push && npm run start:dev",
   "forwardPorts": [3000],
   "portsAttributes": {
     "3000": {
