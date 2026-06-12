@@ -4,26 +4,44 @@ import {
   ForgotPasswordModel,
   ApiResponse,
 } from '../models/AuthModel';
+import axios from 'axios';
+
 
 const MOCK_EMAIL = 'admin@gmail.com';
 const MOCK_PASSWORD = '123456';
 
-export const loginApi = (
+const BASE_URL =
+  'https://super-goldfish-77v7p57gj6rx275v-3000.app.github.dev';
+
+  export const loginApi = async (
   credentials: LoginModel,
 ): Promise<ApiResponse> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (
-        credentials.email === MOCK_EMAIL &&
-        credentials.password === MOCK_PASSWORD
-      ) {
-        resolve({ status: true, message: 'Login successful' });
-      } else {
-        reject({ status: false, message: 'Invalid credentials' });
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/auth/login`,
+      {
+        email: credentials.email,
+        password: credentials.password,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    return response.data;
+  } catch (error: any) {
+    console.error('Login API error:', error);
+    throw (
+      error?.response?.data || {
+        status: false,
+        message: 'Login failed',
       }
-    }, 1500);
-  });
-};
+        
+    );
+  }
+}
 
 export const signUpApi = (
   data: SignUpModel,
@@ -31,15 +49,9 @@ export const signUpApi = (
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (data.email === MOCK_EMAIL) {
-        reject({
-          status: false,
-          message: 'An account with this email already exists.',
-        });
+        
       } else {
-        resolve({
-          status: true,
-          message: 'Account created successfully!',
-        });
+        
       }
     }, 1500);
   });
@@ -51,10 +63,7 @@ export const forgotPasswordApi = (
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (data.email === MOCK_EMAIL) {
-        resolve({
-          status: true,
-          message: 'Password reset link sent to your email.',
-        });
+        
       } else {
         reject({
           status: false,

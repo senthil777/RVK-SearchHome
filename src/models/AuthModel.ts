@@ -15,7 +15,8 @@ export interface SignUpModel {
 
 export interface ApiResponse {
   status: boolean;
-  message: string;
+  accessToken: string;
+  
 }
 
 export interface ForgotPasswordModel {
