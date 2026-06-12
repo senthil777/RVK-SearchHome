@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   View,
   TextInput,
@@ -31,6 +31,16 @@ const LoginScreen = ({ navigation }: Props) => {
 
   const passwordRef = useRef<TextInputType>(null);
 
+  // ✅ Navigate to MainApp on successful login
+  useEffect(() => {
+    if (successMessage) {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'MainApp' }],
+      });
+    }
+  }, [successMessage]);
+
   const handleForgotPassword = () => {
     navigation.navigate('ForgotPassword');
   };
@@ -40,12 +50,10 @@ const LoginScreen = ({ navigation }: Props) => {
   };
 
   const handleGoogleLogin = () => {
-    // Integrate @react-native-google-signin/google-signin
     console.log('Google login pressed');
   };
 
   const handleAppleLogin = () => {
-    // Integrate @invertase/react-native-apple-authentication
     console.log('Apple login pressed');
   };
 
@@ -64,11 +72,15 @@ const LoginScreen = ({ navigation }: Props) => {
           <Text style={styles.title}>Welcome Back</Text>
           <Text style={styles.subtitle}>Sign in to your account</Text>
 
-          {/* Success Banner */}
-          {successMessage ? (
-            <View style={styles.successBanner}>
-              <Text style={styles.successText}>{successMessage}</Text>
-            </View>
+          {/* Error Banner */}
+          {error ? (
+            <Text
+              style={styles.errorText}
+              accessibilityRole="alert"
+              testID="error-text"
+            >
+              {error}
+            </Text>
           ) : null}
 
           <TextInput
@@ -105,16 +117,6 @@ const LoginScreen = ({ navigation }: Props) => {
             editable={!loading}
             testID="password-input"
           />
-
-          {error ? (
-            <Text
-              style={styles.errorText}
-              accessibilityRole="alert"
-              testID="error-text"
-            >
-              {error}
-            </Text>
-          ) : null}
 
           <TouchableOpacity
             onPress={handleForgotPassword}
@@ -218,17 +220,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 32,
   },
-  successBanner: {
-    backgroundColor: '#E8F5E9',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-  },
-  successText: {
-    color: '#2E7D32',
-    fontSize: 14,
-    textAlign: 'center',
-  },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
@@ -245,8 +236,12 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#E24B4A',
     fontSize: 13,
-    marginBottom: 8,
-    marginTop: -8,
+    backgroundColor: '#FFF0F0',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#F7C1C1',
   },
   forgotContainer: {
     alignSelf: 'flex-end',

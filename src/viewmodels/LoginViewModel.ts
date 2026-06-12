@@ -45,11 +45,13 @@ export const useLoginViewModel = () => {
 
     try {
       setLoading(true);
+      
+    console.log('Error response data:', credentials);
       const response: ApiResponse = await loginApi(credentials);
-      setSuccessMessage(response.message);
+      setSuccessMessage(response.accessToken);
     } catch (err) {
       const apiError = err as ApiResponse;
-      setError(apiError.message ?? 'Something went wrong. Please try again.');
+      setError(apiError.accessToken ?? 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
