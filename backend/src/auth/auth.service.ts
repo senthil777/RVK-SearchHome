@@ -57,7 +57,7 @@ export class AuthService {
       password,
     });
 
-    return this.buildAuthResponse(user);
+    return await this.buildAuthResponse(user, 201, 'User registered successfully');
   }
 
   async login(dto: LoginDto) {
@@ -71,7 +71,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password.');
     }
 
-    return this.buildAuthResponse(user);
+    return await this.buildAuthResponse(user, 200, 'Successfully login');
   }
 
   async forgotPassword(dto: ForgotPasswordDto) {
@@ -80,7 +80,7 @@ export class AuthService {
     const message = 'If an account exists for this email, a reset token has been generated.';
 
     if (!user) {
-      return { message };
+      return { status: 200, message };
     }
 
     const rawToken = randomBytes(32).toString('hex');
@@ -109,6 +109,7 @@ export class AuthService {
     }
 
     return {
+      status: 200,
       message,
       resetToken: rawToken,
     };
@@ -138,14 +139,16 @@ export class AuthService {
       ]);
     }
 
-    return { message: 'Password reset successfully.' };
+    return { status: 200, message: 'Password reset successfully.' };
   }
 
-  private buildAuthResponse(user: AppUser) {
+  private async buildAuthResponse(user: AppUser, status = 200, message = 'Successfully login') {
     const payload = { sub: user.id, email: user.email };
 
     return {
-      user: this.usersService.toPublicUser(user),
+      user: await this.usersService.toPublicUser(user),
+      status,
+      message,
       accessToken: this.jwtService.sign(payload),
     };
   }

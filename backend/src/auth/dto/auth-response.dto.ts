@@ -27,6 +27,12 @@ export class AuthResponseDto {
   @ApiProperty({ type: UserResponseDto })
   user: UserResponseDto;
 
+  @ApiProperty({ example: 200 })
+  status: number;
+
+  @ApiProperty({ example: 'Successfully login' })
+  message: string;
+
   @ApiProperty({
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
   })
@@ -34,6 +40,9 @@ export class AuthResponseDto {
 }
 
 export class ForgotPasswordResponseDto {
+  @ApiProperty({ example: 200 })
+  status: number;
+
   @ApiProperty({
     example: 'If an account exists for this email, a reset token has been generated.',
   })
@@ -48,6 +57,9 @@ export class ForgotPasswordResponseDto {
 }
 
 export class MessageResponseDto {
+  @ApiProperty({ example: 200 })
+  status: number;
+
   @ApiProperty({ example: 'Password reset successfully.' })
   message: string;
 }

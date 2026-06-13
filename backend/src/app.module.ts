@@ -5,6 +5,8 @@ import { RequestLoggerMiddleware } from './common/middleware/request-logger.midd
 import { validateEnv } from './config/env.validation';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
+import { PropertiesModule } from './properties/properties.module';
+import { ListingsModule } from './listings/listings.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { UsersModule } from './users/users.module';
     PrismaModule,
     UsersModule,
     AuthModule,
+    PropertiesModule,
+    ListingsModule,
   ],
 })
 export class AppModule implements NestModule {

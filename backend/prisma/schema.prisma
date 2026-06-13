@@ -3,20 +3,25 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id             String          @id @default(uuid()) @db.Uuid
-  firstName      String          @map("first_name")
-  lastName       String          @map("last_name")
-  email          String          @unique
-  password       String
-  address        String
-  createdAt      DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt      DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
-  passwordResets PasswordReset[]
+  id              String          @id @default(uuid()) @db.Uuid
+  firstName       String          @map("first_name")
+  lastName        String          @map("last_name")
+  email           String          @unique
+  password        String
+  address         String
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
+  passwordResets  PasswordReset[]
+  listings        Property[]      @relation("UserListings")
+  savedProperties SavedProperty[]
+  preferences     UserPreference?
+  recentViews     RecentView[]
 
   @@map("users")
 }
@@ -33,4 +38,63 @@ model PasswordReset {
   @@index([userId])
   @@index([token])
   @@map("password_resets")
+}
+
+enum PropertyType {
+  SALE
+  RENT
+}
+
+model Property {
+  id          String       @id @default(uuid()) @db.Uuid
+  title       String
+  address     String
+  price       Decimal      @db.Decimal(12, 2)
+  type        PropertyType
+  imageUrl    String?      @map("image_url")
+  latitude    Float?
+  longitude   Float?
+  description String?
+  isFeatured  Boolean      @default(false) @map("is_featured")
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  ownerId     String?      @map("owner_id") @db.Uuid
+  owner       User?        @relation("UserListings", fields: [ownerId], references: [id], onDelete: Cascade)
+  savedBy     SavedProperty[]
+  viewedBy    RecentView[]
+
+  @@map("properties")
+}
+
+model UserPreference {
+  id                   String  @id @default(uuid()) @db.Uuid
+  userId               String  @unique @map("user_id") @db.Uuid
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notificationsEnabled Boolean @default(true) @map("notifications_enabled")
+  language             String  @default("English")
+  darkMode             Boolean @default(false) @map("dark_mode")
+
+  @@map("user_preferences")
+}
+
+model SavedProperty {
+  userId     String   @map("user_id") @db.Uuid
+  propertyId String   @map("property_id") @db.Uuid
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@id([userId, propertyId])
+  @@map("saved_properties")
+}
+
+model RecentView {
+  userId     String   @map("user_id") @db.Uuid
+  propertyId String   @map("property_id") @db.Uuid
+  viewedAt   DateTime @default(now()) @map("viewed_at") @db.Timestamptz(6)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@id([userId, propertyId])
+  @@map("recent_views")
 }
