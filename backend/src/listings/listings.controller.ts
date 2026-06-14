@@ -14,7 +14,7 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nes
 import { Request } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ListingsService } from './listings.service';
-import { CreateListingDto } from './dto/create-listing.dto';
+import { CreateListingMultipartDto } from './dto/create-listing-multipart.dto';
 
 type AuthenticatedRequest = Request & {
   user: {
@@ -43,35 +43,9 @@ export class ListingsController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Submit a new property listing' })
-  async createListing(
-    @Req() request: AuthenticatedRequest,
-    @Body() dto: CreateListingDto,
-  ) {
-    const listing = await this.listingsService.createListing(request.user.id, dto);
-    return {
-      status: 201,
-      message: 'Property listing created successfully',
-      property: listing,
-    };
-  }
-
-  @Post('upload')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Upload camera captured photo' })
+  @ApiOperation({ summary: 'Submit a new property listing with image upload' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        image: {
-          type: 'string',
-          format: 'binary',
-        },
-      },
-    },
-  })
+  @ApiBody({ type: CreateListingMultipartDto })
   @UseInterceptors(
     FileInterceptor('image', {
       fileFilter: (req, file, callback) => {
@@ -82,9 +56,10 @@ export class ListingsController {
       },
     }),
   )
-  async uploadFile(
+  async createListing(
     @UploadedFile() file: Express.Multer.File,
-    @Req() request: Request,
+    @Req() request: AuthenticatedRequest,
+    @Body() dto: CreateListingMultipartDto,
   ) {
     if (!file) {
       throw new BadRequestException('Image file is required');
@@ -92,10 +67,18 @@ export class ListingsController {
 
     const imageUrl = await this.listingsService.uploadImage(file, request);
 
+    const listing = await this.listingsService.createListing(request.user.id, {
+      imageUrl,
+      latitude: dto.latitude,
+      longitude: dto.longitude,
+      description: dto.description,
+    });
+
     return {
       status: 201,
-      message: 'Image uploaded successfully',
-      imageUrl,
+      message: 'Property listing created successfully',
+      property: listing,
     };
   }
+
 }

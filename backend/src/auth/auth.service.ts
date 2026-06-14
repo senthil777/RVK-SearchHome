@@ -15,6 +15,7 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ForgotOrResetPasswordDto } from './dto/forgot-or-reset-password.dto';
 
 const PASSWORD_RESET_TTL_MINUTES = 15;
 const BCRYPT_ROUNDS = 12;
@@ -141,6 +142,30 @@ export class AuthService {
 
     return { status: 200, message: 'Password reset successfully.' };
   }
+
+  async forgotOrResetPassword(dto: ForgotOrResetPasswordDto) {
+    if (dto.email && dto.newPassword) {
+      const forgotResult = await this.forgotPassword({ email: dto.email });
+      if (!forgotResult.resetToken) {
+        throw new BadRequestException('Could not generate reset token for the provided email.');
+      }
+      return this.resetPassword({
+        token: forgotResult.resetToken,
+        newPassword: dto.newPassword,
+      });
+    } else if (dto.resetToken && dto.newPassword) {
+      return this.resetPassword({ token: dto.resetToken, newPassword: dto.newPassword });
+    } else if (dto.email) {
+      return this.forgotPassword({ email: dto.email });
+    } else {
+      throw new BadRequestException(
+        'Invalid request: provide either "email" and "newPassword" to reset immediately, "email" to request a reset token, or "resetToken" and "newPassword" to reset.',
+      );
+    }
+
+  }
+
+
 
   private async buildAuthResponse(user: AppUser, status = 200, message = 'Successfully login') {
     const payload = { sub: user.id, email: user.email };

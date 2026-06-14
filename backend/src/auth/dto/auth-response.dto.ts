@@ -63,3 +63,21 @@ export class MessageResponseDto {
   @ApiProperty({ example: 'Password reset successfully.' })
   message: string;
 }
+
+export class ForgotOrResetPasswordResponseDto {
+  @ApiProperty({ example: 200 })
+  status: number;
+
+  @ApiProperty({
+    example: 'Password reset successfully. / If an account exists for this email, a reset token has been generated.',
+  })
+  message: string;
+
+  @ApiProperty({
+    required: false,
+    description:
+      'Development-only raw token. In production, send this token by email and remove it from the API response.',
+  })
+  resetToken?: string;
+}
+

@@ -21,15 +21,23 @@ document.getElementById('loginForm').addEventListener('submit', (event) => {
   submitJson('/auth/login', formData(event.target), true);
 });
 
-document.getElementById('forgotForm').addEventListener('submit', (event) => {
+document.getElementById('forgotForm').addEventListener('submit', async (event) => {
   event.preventDefault();
-  submitJson('/auth/forgot-password', formData(event.target), false);
+  const data = await submitJson('/auth/forgot-or-reset-password', formData(event.target), false);
+  if (data && data.resetToken) {
+    const tokenInput = document.querySelector('input[name="resetToken"]');
+    if (tokenInput) {
+      tokenInput.value = data.resetToken;
+    }
+  }
+
 });
 
 document.getElementById('resetForm').addEventListener('submit', (event) => {
   event.preventDefault();
-  submitJson('/auth/reset-password', formData(event.target), false);
+  submitJson('/auth/forgot-or-reset-password', formData(event.target), false);
 });
+
 
 document.getElementById('meButton').addEventListener('click', async () => {
   await request('/users/me', {
@@ -68,7 +76,10 @@ async function submitJson(path, body, saveToken) {
     localStorage.setItem('myapp_access_token', accessToken);
     updateTokenPreview();
   }
+
+  return data;
 }
+
 
 async function request(path, options) {
   try {

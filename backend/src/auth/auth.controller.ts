@@ -10,12 +10,14 @@ import {
 import {
   AuthResponseDto,
   ForgotPasswordResponseDto,
+  ForgotOrResetPasswordResponseDto,
   MessageResponseDto,
 } from './dto/auth-response.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ForgotOrResetPasswordDto } from './dto/forgot-or-reset-password.dto';
 import { AuthService } from './auth.service';
 
 @ApiTags('Auth')
@@ -42,21 +44,12 @@ export class AuthController {
     return this.authService.login(dto);
   }
 
-  @Post('forgot-password')
+  @Post('forgot-or-reset-password')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Generate a password reset token' })
-  @ApiOkResponse({ type: ForgotPasswordResponseDto })
-  @ApiBadRequestResponse({ description: 'Invalid request body.' })
-  forgotPassword(@Body() dto: ForgotPasswordDto) {
-    return this.authService.forgotPassword(dto);
-  }
-
-  @Post('reset-password')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Reset password with a valid reset token' })
-  @ApiOkResponse({ type: MessageResponseDto })
-  @ApiBadRequestResponse({ description: 'Reset token is invalid, expired, or request body is invalid.' })
-  resetPassword(@Body() dto: ResetPasswordDto) {
-    return this.authService.resetPassword(dto);
+  @ApiOperation({ summary: 'Generate a password reset token OR reset password with a valid token' })
+  @ApiOkResponse({ type: ForgotOrResetPasswordResponseDto })
+  @ApiBadRequestResponse({ description: 'Invalid request body or reset token is invalid/expired.' })
+  forgotOrResetPassword(@Body() dto: ForgotOrResetPasswordDto) {
+    return this.authService.forgotOrResetPassword(dto);
   }
 }
