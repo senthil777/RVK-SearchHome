@@ -1,57 +1,62 @@
-import {
-  LoginModel,
-  SignUpModel,
-  ForgotPasswordModel,
-  ApiResponse,
-} from '../models/AuthModel';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import { LoginModel, SignUpModel, ForgotPasswordModel, ApiResponse, ApiErrorResponse } from '../models/AuthModel';
+import ENV from '../config/env';
 
+const apiClient = axios.create({
+  baseURL: ENV.API_BASE_URL,
+  timeout: 10000,
+  headers: { 'Content-Type': 'application/json' },
+});
 
-const MOCK_EMAIL = 'admin@gmail.com';
-const MOCK_PASSWORD = '123456';
+const handleAxiosError = (error: unknown): never => {
+  if (error instanceof AxiosError) {
+    const errData = error.response?.data as ApiErrorResponse | undefined;
+    throw {
+      status: errData?.status ?? 0,
+      message: errData?.message ?? 'Request failed. Please try again.',
+    } satisfies ApiErrorResponse;
+  }
+  throw {
+    status: 0,
+    message: 'An unexpected error occurred.',
+  } satisfies ApiErrorResponse;
+};
 
-const BASE_URL =
-  'https://super-goldfish-77v7p57gj6rx275v-3000.app.github.dev';
-
-  export const loginApi = async (
+export const loginApi = async (
   credentials: LoginModel,
 ): Promise<ApiResponse> => {
   try {
-    const response = await axios.post(
-      `${BASE_URL}/auth/login`,
-      {
-        email: credentials.email,
-        password: credentials.password,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
-    );
-
+    const response = await apiClient.post<ApiResponse>('/auth/login', {
+      email: credentials.email,
+      password: credentials.password,
+    });
     return response.data;
-  } catch (error: any) {
+  } catch (error) {
     console.error('Login API error:', error);
-    throw (
-      error?.response?.data || {
-        status: false,
-        message: 'Login failed',
-      }
-        
-    );
+    return handleAxiosError(error);
   }
-}
+};
 
-export const signUpApi = (
-  data: SignUpModel,
-): Promise<ApiResponse> => {
+export const signUpApi = (data: SignUpModel): Promise<ApiResponse> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (data.email === MOCK_EMAIL) {
-        
+      if (data.email === ENV.MOCK_EMAIL) {
+        reject({ status: 400, message: 'Email already registered.' } satisfies ApiErrorResponse);
       } else {
-        
+        resolve({
+          status: 200,
+          message: 'Account created successfully.',
+          accessToken: '',
+          user: {
+            id: '',
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
+            address: data.address,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+        });
       }
     }, 1500);
   });
@@ -62,12 +67,14 @@ export const forgotPasswordApi = (
 ): Promise<ApiResponse> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (data.email === MOCK_EMAIL) {
-        
+      if (data.email === ENV.MOCK_EMAIL) {
+        reject({ status: 404, message: 'No account found with this email address.' } satisfies ApiErrorResponse);
       } else {
-        reject({
-          status: false,
-          message: 'No account found with this email address.',
+        resolve({
+          status: 200,
+          message: 'Password reset email sent.',
+          accessToken: '',
+          user: {} as any,
         });
       }
     }, 1500);

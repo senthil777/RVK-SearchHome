@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import {
   View,
   TextInput,
@@ -24,6 +24,7 @@ const LoginScreen = ({ navigation }: Props) => {
     loading,
     error,
     successMessage,
+    accessToken,
     setEmail,
     setPassword,
     login,
@@ -31,31 +32,23 @@ const LoginScreen = ({ navigation }: Props) => {
 
   const passwordRef = useRef<TextInputType>(null);
 
-  // ✅ Navigate to MainApp on successful login
+  // ✅ Password visibility toggle state
+  const [showPassword, setShowPassword] = useState(false);
+
+  // ✅ Navigate only when accessToken is received
   useEffect(() => {
-    if (successMessage) {
+    if (accessToken) {
       navigation.reset({
         index: 0,
         routes: [{ name: 'MainApp' }],
       });
     }
-  }, [successMessage]);
+  }, [accessToken]);
 
-  const handleForgotPassword = () => {
-    navigation.navigate('ForgotPassword');
-  };
-
-  const handleSignup = () => {
-    navigation.navigate('SignUp');
-  };
-
-  const handleGoogleLogin = () => {
-    console.log('Google login pressed');
-  };
-
-  const handleAppleLogin = () => {
-    console.log('Apple login pressed');
-  };
+  const handleForgotPassword = () => navigation.navigate('ForgotPassword');
+  const handleSignup = () => navigation.navigate('SignUp');
+  const handleGoogleLogin = () => console.log('Google login pressed');
+  const handleAppleLogin = () => console.log('Apple login pressed');
 
   return (
     <KeyboardAvoidingView
@@ -83,6 +76,7 @@ const LoginScreen = ({ navigation }: Props) => {
             </Text>
           ) : null}
 
+          {/* Email Input */}
           <TextInput
             placeholder="Email"
             value={email}
@@ -101,23 +95,38 @@ const LoginScreen = ({ navigation }: Props) => {
             testID="email-input"
           />
 
-          <TextInput
-            ref={passwordRef}
-            placeholder="Password"
-            value={password}
-            secureTextEntry
-            onChangeText={setPassword}
-            style={[styles.input, !!error && styles.inputError]}
-            textContentType="password"
-            autoComplete="password"
-            returnKeyType="done"
-            onSubmitEditing={login}
-            accessibilityLabel="Password"
-            accessibilityHint="Enter your password"
-            editable={!loading}
-            testID="password-input"
-          />
+          {/* ✅ Password Input with Eye Toggle */}
+          <View style={[styles.passwordContainer, !!error && styles.inputError]}>
+            <TextInput
+              ref={passwordRef}
+              placeholder="Password"
+              value={password}
+              secureTextEntry={!showPassword}
+              onChangeText={setPassword}
+              style={styles.passwordInput}
+              textContentType="password"
+              autoComplete="password"
+              returnKeyType="done"
+              onSubmitEditing={login}
+              accessibilityLabel="Password"
+              accessibilityHint="Enter your password"
+              editable={!loading}
+              testID="password-input"
+            />
+            <TouchableOpacity
+              onPress={() => setShowPassword(prev => !prev)}
+              style={styles.eyeButton}
+              accessibilityRole="button"
+              accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+              testID="toggle-password-btn"
+            >
+              <Text style={styles.eyeIcon}>
+                {showPassword ? '🙈' : '👁️'}
+              </Text>
+            </TouchableOpacity>
+          </View>
 
+          {/* Forgot Password */}
           <TouchableOpacity
             onPress={handleForgotPassword}
             style={styles.forgotContainer}
@@ -128,6 +137,7 @@ const LoginScreen = ({ navigation }: Props) => {
             <Text style={styles.forgotText}>Forgot Password?</Text>
           </TouchableOpacity>
 
+          {/* Login Button */}
           <TouchableOpacity
             style={[styles.button, loading && styles.buttonDisabled]}
             onPress={login}
@@ -144,12 +154,14 @@ const LoginScreen = ({ navigation }: Props) => {
             )}
           </TouchableOpacity>
 
+          {/* Divider */}
           <View style={styles.dividerRow}>
             <View style={styles.dividerLine} />
             <Text style={styles.dividerText}>or continue with</Text>
             <View style={styles.dividerLine} />
           </View>
 
+          {/* Social Buttons */}
           <View style={styles.socialRow}>
             <TouchableOpacity
               style={styles.socialButton}
@@ -174,6 +186,7 @@ const LoginScreen = ({ navigation }: Props) => {
             </TouchableOpacity>
           </View>
 
+          {/* Sign Up Row */}
           <View style={styles.signupRow}>
             <Text style={styles.signupText}>Don't have an account? </Text>
             <TouchableOpacity
@@ -233,6 +246,33 @@ const styles = StyleSheet.create({
   inputError: {
     borderColor: '#E24B4A',
   },
+
+  // ✅ Password wrapper styles
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginBottom: 15,
+    height: 50,
+    paddingHorizontal: 15,
+  },
+  passwordInput: {
+    flex: 1,
+    fontSize: 15,
+    color: '#111',
+    height: '100%',
+  },
+  eyeButton: {
+    paddingHorizontal: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  eyeIcon: {
+    fontSize: 18,
+  },
+
   errorText: {
     color: '#E24B4A',
     fontSize: 13,
