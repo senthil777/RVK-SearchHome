@@ -8,6 +8,7 @@ import {
   Animated,
   Easing,
   StatusBar,
+  Platform,
 } from 'react-native';
 import { TokenStorage } from '../storage/TokenStorage';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -15,23 +16,60 @@ import type { RootStackParamList } from '../navigation/AppNavigator';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 
+// ── Design tokens (matches Login / SignUp / ForgotPassword screens) ──
+const GREEN_DARK  = '#2E6B3E';   // brand dark green
+const GREEN_NAVY  = '#1A237E';   // navy blue (FAB, accents)
+const GREEN_BG    = '#E8F5E9';   // mint green background
+const GREEN_MID   = '#4CAF50';   // mid green
+const GREEN_LIGHT = '#C8E6C9';   // light green blobs
+const GOLD        = '#E8A838';   // magnifier / accent gold
+
 const SplashScreen = ({ navigation }: Props) => {
 
-  // Animation values
-  const iconScale     = useRef(new Animated.Value(0)).current;
-  const iconOpacity   = useRef(new Animated.Value(0)).current;
-  const textOpacity   = useRef(new Animated.Value(0)).current;
+  // ── Animation refs ──────────────────────────────────────────
+  const iconScale      = useRef(new Animated.Value(0)).current;
+  const iconOpacity    = useRef(new Animated.Value(0)).current;
+  const ringScale      = useRef(new Animated.Value(0.6)).current;
+  const ringOpacity    = useRef(new Animated.Value(0.7)).current;
+  const headerOpacity  = useRef(new Animated.Value(0)).current;
+  const textOpacity    = useRef(new Animated.Value(0)).current;
   const taglineOpacity = useRef(new Animated.Value(0)).current;
-  const ringScale     = useRef(new Animated.Value(0.6)).current;
-  const ringOpacity   = useRef(new Animated.Value(0.6)).current;
+  const brandOpacity   = useRef(new Animated.Value(0)).current;
+  const blob1Scale     = useRef(new Animated.Value(0.8)).current;
+  const blob2Scale     = useRef(new Animated.Value(0.8)).current;
 
   useEffect(() => {
-    // ✅ Step 1: Animate icon in
+    // ── Step 1: Blobs drift in ─────────────────────────────
+    Animated.parallel([
+      Animated.timing(blob1Scale, {
+        toValue: 1,
+        duration: 800,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+      Animated.timing(blob2Scale, {
+        toValue: 1,
+        duration: 900,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+    ]).start();
+
     Animated.sequence([
+
+      // ── Step 2: Header fades in ────────────────────────
+      Animated.timing(headerOpacity, {
+        toValue: 1,
+        duration: 450,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+
+      // ── Step 3: Icon springs in ────────────────────────
       Animated.parallel([
         Animated.spring(iconScale, {
           toValue: 1,
-          tension: 60,
+          tension: 55,
           friction: 7,
           useNativeDriver: true,
         }),
@@ -43,37 +81,45 @@ const SplashScreen = ({ navigation }: Props) => {
         }),
       ]),
 
-      // ✅ Step 2: Pulse ring animation
+      // ── Step 4: Pulse ring expands & fades ────────────
       Animated.parallel([
         Animated.timing(ringScale, {
-          toValue: 1.4,
-          duration: 600,
+          toValue: 1.5,
+          duration: 650,
           easing: Easing.out(Easing.ease),
           useNativeDriver: true,
         }),
         Animated.timing(ringOpacity, {
           toValue: 0,
-          duration: 600,
+          duration: 650,
           useNativeDriver: true,
         }),
       ]),
 
-      // ✅ Step 3: Fade in app name
+      // ── Step 5: App name fades in ──────────────────────
       Animated.timing(textOpacity, {
         toValue: 1,
-        duration: 400,
+        duration: 380,
         useNativeDriver: true,
       }),
 
-      // ✅ Step 4: Fade in tagline
+      // ── Step 6: Tagline fades in ───────────────────────
       Animated.timing(taglineOpacity, {
         toValue: 1,
-        duration: 350,
+        duration: 320,
         useNativeDriver: true,
       }),
+
+      // ── Step 7: Brand footer fades in ──────────────────
+      Animated.timing(brandOpacity, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+
     ]).start();
 
-    // ✅ Check auth after animations settle
+    // ── Auth check after animations settle ────────────────
     const timer = setTimeout(async () => {
       try {
         const token = await TokenStorage.getToken();
@@ -87,23 +133,30 @@ const SplashScreen = ({ navigation }: Props) => {
           routes: [{ name: 'Login' }],
         });
       }
-    }, 2600);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#0A2463" />
+      <StatusBar barStyle="dark-content" backgroundColor={GREEN_BG} />
 
-      {/* Background gradient circles for depth */}
-      <View style={styles.bgCircle1} />
-      <View style={styles.bgCircle2} />
+      {/* ── Decorative blobs (matches ForgotPassword / Login bg) ── */}
+      <Animated.View style={[styles.blob1, { transform: [{ scale: blob1Scale }] }]} />
+      <Animated.View style={[styles.blob2, { transform: [{ scale: blob2Scale }] }]} />
+      <Animated.View style={styles.blob3} />
 
-      {/* Center content */}
+      {/* ── Header: ⌂ RVK HomeSearch (matches all screens) ── */}
+      <Animated.View style={[styles.header, { opacity: headerOpacity }]}>
+        <Text style={styles.headerIcon}>⌂</Text>
+        <Text style={styles.headerTitle}>RVK HomeSearch</Text>
+      </Animated.View>
+
+      {/* ── Center content ── */}
       <View style={styles.centerContent}>
 
-        {/* Pulse ring behind icon */}
+        {/* Pulse ring */}
         <Animated.View
           style={[
             styles.pulseRing,
@@ -114,7 +167,7 @@ const SplashScreen = ({ navigation }: Props) => {
           ]}
         />
 
-        {/* ✅ Home Search Icon */}
+        {/* ✅ Icon card — white circle matching Login hero style ── */}
         <Animated.View
           style={[
             styles.iconWrapper,
@@ -124,17 +177,13 @@ const SplashScreen = ({ navigation }: Props) => {
             },
           ]}
         >
-          {/* House shape using Views */}
           <View style={styles.houseContainer}>
 
-            {/* Roof triangle using borders */}
+            {/* Roof */}
             <View style={styles.roof} />
 
             {/* House body */}
             <View style={styles.houseBody}>
-
-              {/* Door */}
-              <View style={styles.door} />
 
               {/* Windows */}
               <View style={styles.windowRow}>
@@ -142,9 +191,12 @@ const SplashScreen = ({ navigation }: Props) => {
                 <View style={styles.window} />
               </View>
 
+              {/* Door */}
+              <View style={styles.door} />
+
             </View>
 
-            {/* Search magnifier overlaid on house */}
+            {/* Gold magnifier */}
             <View style={styles.magnifier}>
               <View style={styles.magnifierCircle} />
               <View style={styles.magnifierHandle} />
@@ -163,12 +215,19 @@ const SplashScreen = ({ navigation }: Props) => {
           Find your perfect home
         </Animated.Text>
 
+        {/* Green pill badge — matches brand accent */}
+        <Animated.View style={[styles.badge, { opacity: taglineOpacity }]}>
+          <Text style={styles.badgeText}>🏡  Properties · Rentals · Sales</Text>
+        </Animated.View>
+
       </View>
 
-      {/* Bottom brand */}
-      <Animated.Text style={[styles.brand, { opacity: taglineOpacity }]}>
-        RVK Properties
-      </Animated.Text>
+      {/* ── Bottom brand footer (matches screen pattern) ── */}
+      <Animated.View style={[styles.brandRow, { opacity: brandOpacity }]}>
+        <View style={styles.brandDivider} />
+        <Text style={styles.brandText}>RVK Properties</Text>
+        <View style={styles.brandDivider} />
+      </Animated.View>
 
     </View>
   );
@@ -176,179 +235,237 @@ const SplashScreen = ({ navigation }: Props) => {
 
 export default SplashScreen;
 
-const ICON_SIZE = 110;
-const ROOF_WIDTH = ICON_SIZE + 20;
+// ── Icon dimensions ──────────────────────────────────────────
+const ICON_SIZE  = 100;
+const ROOF_WIDTH = ICON_SIZE + 16;
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
-    backgroundColor: '#0A2463',
+    backgroundColor: GREEN_BG,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
-  // Background depth circles
-  bgCircle1: {
+  // ── Blobs ─────────────────────────────────────────────────
+  blob1: {
     position: 'absolute',
-    width: 400,
-    height: 400,
-    borderRadius: 200,
-    backgroundColor: '#1B3A8A',
+    width: 320,
+    height: 320,
+    borderRadius: 160,
+    backgroundColor: GREEN_LIGHT,
+    opacity: 0.55,
     top: -80,
-    right: -100,
-    opacity: 0.5,
+    right: -90,
   },
-  bgCircle2: {
+  blob2: {
     position: 'absolute',
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: '#1B3A8A',
-    bottom: -60,
-    left: -80,
-    opacity: 0.4,
+    width: 240,
+    height: 240,
+    borderRadius: 120,
+    backgroundColor: GREEN_LIGHT,
+    opacity: 0.45,
+    bottom: -50,
+    left: -70,
+  },
+  blob3: {
+    position: 'absolute',
+    width: 130,
+    height: 130,
+    borderRadius: 65,
+    backgroundColor: GREEN_LIGHT,
+    opacity: 0.35,
+    bottom: 160,
+    right: 20,
   },
 
+  // ── Header ────────────────────────────────────────────────
+  header: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 60 : 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  headerIcon: {
+    fontSize: 20,
+    color: GREEN_DARK,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: GREEN_DARK,
+    letterSpacing: 0.3,
+  },
+
+  // ── Center ────────────────────────────────────────────────
   centerContent: {
     alignItems: 'center',
     justifyContent: 'center',
   },
 
-  // Pulse ring
+  // ── Pulse ring ────────────────────────────────────────────
   pulseRing: {
     position: 'absolute',
-    width: ICON_SIZE + 60,
-    height: ICON_SIZE + 60,
-    borderRadius: (ICON_SIZE + 60) / 2,
+    width: ICON_SIZE + 70,
+    height: ICON_SIZE + 70,
+    borderRadius: (ICON_SIZE + 70) / 2,
     borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.3)',
+    borderColor: GREEN_DARK,
+    opacity: 0.25,
     backgroundColor: 'transparent',
   },
 
-  // ✅ Icon wrapper circle
+  // ── Icon wrapper: white circle card ───────────────────────
   iconWrapper: {
-    width: ICON_SIZE + 40,
-    height: ICON_SIZE + 40,
-    borderRadius: (ICON_SIZE + 40) / 2,
-    backgroundColor: '#fff',
+    width: ICON_SIZE + 50,
+    height: ICON_SIZE + 50,
+    borderRadius: (ICON_SIZE + 50) / 2,
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
+    marginBottom: 32,
+    borderWidth: 3,
+    borderColor: GREEN_DARK,
+    shadowColor: GREEN_DARK,
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    elevation: 12,
-    marginBottom: 28,
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
+    elevation: 10,
   },
 
-  // House container
+  // ── House ────────────────────────────────────────────────
   houseContainer: {
     alignItems: 'center',
-    justifyContent: 'flex-end',
     position: 'relative',
   },
-
-  // Roof: triangle via border trick
   roof: {
     width: 0,
     height: 0,
-    borderLeftWidth: ROOF_WIDTH / 2,
-    borderRightWidth: ROOF_WIDTH / 2,
-    borderBottomWidth: 42,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderBottomColor: '#0A2463',
-    marginBottom: -2,
+    borderLeftWidth:   ROOF_WIDTH / 2,
+    borderRightWidth:  ROOF_WIDTH / 2,
+    borderBottomWidth: 38,
+    borderLeftColor:   'transparent',
+    borderRightColor:  'transparent',
+    borderBottomColor: GREEN_DARK,
+    marginBottom: -1,
     zIndex: 1,
   },
-
-  // House body
   houseBody: {
-    width: ICON_SIZE - 10,
-    height: 52,
-    backgroundColor: '#1B3A8A',
-    borderBottomLeftRadius: 4,
-    borderBottomRightRadius: 4,
+    width: ICON_SIZE - 16,
+    height: 48,
+    backgroundColor: GREEN_DARK,
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5,
     alignItems: 'center',
-    paddingTop: 8,
+    justifyContent: 'flex-end',
+    paddingBottom: 0,
   },
-
-  // Door at center bottom of body
-  door: {
-    width: 14,
-    height: 22,
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 7,
-    borderTopRightRadius: 7,
-    position: 'absolute',
-    bottom: 0,
-  },
-
-  // Windows row
   windowRow: {
     flexDirection: 'row',
-    gap: 18,
-    marginTop: 6,
+    gap: 16,
+    position: 'absolute',
+    top: 8,
   },
   window: {
-    width: 13,
-    height: 13,
-    backgroundColor: '#fff',
+    width: 12,
+    height: 12,
+    backgroundColor: '#C8E6C9',
     borderRadius: 2,
-    opacity: 0.85,
+  },
+  door: {
+    width: 13,
+    height: 20,
+    backgroundColor: GREEN_BG,
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 6,
+    marginBottom: 0,
   },
 
-  // ✅ Search magnifier overlay
+  // ── Magnifier ─────────────────────────────────────────────
   magnifier: {
     position: 'absolute',
-    bottom: -6,
-    right: -6,
+    bottom: -4,
+    right: -8,
     zIndex: 2,
   },
   magnifierCircle: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     borderWidth: 3,
-    borderColor: '#E8A838',
+    borderColor: GOLD,
     backgroundColor: 'transparent',
   },
   magnifierHandle: {
     width: 3,
-    height: 10,
-    backgroundColor: '#E8A838',
+    height: 9,
+    backgroundColor: GOLD,
     borderRadius: 2,
     position: 'absolute',
-    bottom: -8,
+    bottom: -7,
     right: -1,
     transform: [{ rotate: '45deg' }],
   },
 
-  // App name text
+  // ── Text ──────────────────────────────────────────────────
   appName: {
-    fontSize: 34,
+    fontSize: 32,
     fontWeight: '800',
-    color: '#FFFFFF',
-    letterSpacing: 1.2,
+    color: GREEN_DARK,
+    letterSpacing: 1,
     marginBottom: 8,
   },
-
-  // Tagline
   tagline: {
     fontSize: 15,
-    color: 'rgba(255,255,255,0.65)',
+    color: '#6B8C6B',
     fontWeight: '400',
     letterSpacing: 0.4,
+    marginBottom: 20,
   },
 
-  // Bottom brand
-  brand: {
-    position: 'absolute',
-    bottom: 40,
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.4)',
-    letterSpacing: 2,
+  // ── Green pill badge ──────────────────────────────────────
+  badge: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: GREEN_LIGHT,
+    shadowColor: GREEN_DARK,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  badgeText: {
+    fontSize: 12,
+    color: GREEN_DARK,
     fontWeight: '600',
+    letterSpacing: 0.3,
+  },
+
+  // ── Brand footer ──────────────────────────────────────────
+  brandRow: {
+    position: 'absolute',
+    bottom: Platform.OS === 'ios' ? 44 : 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  brandDivider: {
+    width: 40,
+    height: 1,
+    backgroundColor: GREEN_DARK,
+    opacity: 0.3,
+  },
+  brandText: {
+    fontSize: 12,
+    color: GREEN_DARK,
+    fontWeight: '700',
+    letterSpacing: 2.5,
+    opacity: 0.5,
     textTransform: 'uppercase',
   },
 });

@@ -1,5 +1,11 @@
 import axios, { AxiosError } from 'axios';
-import { LoginModel, SignUpModel, ForgotPasswordModel, ApiResponse, ApiErrorResponse } from '../models/AuthModel';
+import {
+  LoginModel,
+  SignUpModel,
+  ForgotPasswordModel,
+  ApiResponse,
+  ApiErrorResponse,
+} from '../models/AuthModel';
 import ENV from '../config/env';
 
 const apiClient = axios.create({
@@ -8,6 +14,7 @@ const apiClient = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+// ── Centralised error handler ────────────────────────────────
 const handleAxiosError = (error: unknown): never => {
   if (error instanceof AxiosError) {
     const errData = error.response?.data as ApiErrorResponse | undefined;
@@ -22,6 +29,7 @@ const handleAxiosError = (error: unknown): never => {
   } satisfies ApiErrorResponse;
 };
 
+// ── Login ────────────────────────────────────────────────────
 export const loginApi = async (
   credentials: LoginModel,
 ): Promise<ApiResponse> => {
@@ -32,43 +40,40 @@ export const loginApi = async (
     });
     return response.data;
   } catch (error) {
-    console.error('Login API error:', error);
     return handleAxiosError(error);
   }
 };
 
-export const signUpApi = (data: SignUpModel): Promise<ApiResponse> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (data.email === ENV.MOCK_EMAIL) {
-        reject({ status: 400, message: 'Email already registered.' } satisfies ApiErrorResponse);
-      } else {
-        resolve({
-          status: 200,
-          message: 'Account created successfully.',
-          accessToken: '',
-          user: {
-            id: '',
-            firstName: data.firstName,
-            lastName: data.lastName,
-            email: data.email,
-            address: data.address,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
-        });
-      }
-    }, 1500);
-  });
+// ── Sign Up ──────────────────────────────────────────────────
+export const signUpApi = async (
+  data: SignUpModel,
+): Promise<ApiResponse> => {
+  try {
+    // ✅ confirmPassword and profileImage are NOT sent to the API
+    const response = await apiClient.post<ApiResponse>('/auth/register', {
+      firstName: data.firstName,
+      lastName:  data.lastName,
+      email:     data.email,
+      address:   data.address,
+      password:  data.password,
+    });
+    return response.data;
+  } catch (error) {
+    return handleAxiosError(error);
+  }
 };
 
+// ── Forgot Password ──────────────────────────────────────────
 export const forgotPasswordApi = (
   data: ForgotPasswordModel,
 ): Promise<ApiResponse> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (data.email === ENV.MOCK_EMAIL) {
-        reject({ status: 404, message: 'No account found with this email address.' } satisfies ApiErrorResponse);
+        reject({
+          status: 404,
+          message: 'No account found with this email address.',
+        } satisfies ApiErrorResponse);
       } else {
         resolve({
           status: 200,

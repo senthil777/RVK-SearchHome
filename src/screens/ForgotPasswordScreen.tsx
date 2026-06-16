@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StatusBar,
 } from 'react-native';
 import { useForgotPasswordViewModel } from '../viewmodels/ForgotPasswordViewModel';
 
@@ -35,37 +36,55 @@ const ForgotPasswordScreen = ({ navigation }: Props) => {
   // ── Success state ──────────────────────────────────────────
   if (successMessage) {
     return (
-      <View style={styles.flex}>
-        <View style={styles.successContainer}>
+      <View style={styles.root}>
+        <StatusBar barStyle="dark-content" backgroundColor="#E8F5E9" />
 
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerIcon}>🛡</Text>
+          <Text style={styles.headerTitle}>RVK HomeSearch</Text>
+        </View>
+
+        <View style={styles.successContainer}>
           <View style={styles.successIconCircle}>
             <Text style={styles.successIconText}>✓</Text>
           </View>
-
           <Text style={styles.successTitle}>Check your email</Text>
           <Text style={styles.successMessage}>{successMessage}</Text>
 
           <TouchableOpacity
-            style={styles.button}
+            style={styles.sendButton}
             onPress={handleBackToLogin}
             accessibilityRole="button"
             accessibilityLabel="Back to login"
             testID="back-to-login-btn"
           >
-            <Text style={styles.btnText}>Back to Login</Text>
+            <Text style={styles.sendBtnText}>Back to Login</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.resendContainer}
             onPress={submitForgotPassword}
             accessibilityRole="button"
-            accessibilityLabel="Resend email"
             testID="resend-btn"
           >
             <Text style={styles.resendText}>Didn't receive it? </Text>
             <Text style={styles.resendLink}>Resend</Text>
           </TouchableOpacity>
+        </View>
 
+        {/* Bottom Sign In Tab */}
+        <View style={styles.bottomTab}>
+          <TouchableOpacity
+            style={styles.signInFab}
+            onPress={handleBackToLogin}
+            accessibilityRole="button"
+            accessibilityLabel="Sign In"
+            testID="sign-in-fab"
+          >
+            <Text style={styles.signInFabIcon}>→</Text>
+          </TouchableOpacity>
+          <Text style={styles.signInFabLabel}>Sign In</Text>
         </View>
       </View>
     );
@@ -73,268 +92,320 @@ const ForgotPasswordScreen = ({ navigation }: Props) => {
 
   // ── Form state ─────────────────────────────────────────────
   return (
-    <KeyboardAvoidingView
-      style={styles.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
+    <View style={styles.root}>
+      <StatusBar barStyle="dark-content" backgroundColor="#E8F5E9" />
+
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <View style={styles.container}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
 
-          {/* Back Button */}
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={handleBackToLogin}
-            accessibilityRole="button"
-            accessibilityLabel="Go back"
-            testID="back-btn"
-          >
-            <Text style={styles.backArrow}>←</Text>
-          </TouchableOpacity>
-
-          {/* Header */}
-          <View style={styles.iconCircle}>
-            <Text style={styles.lockIcon}>🔒</Text>
+          {/* ── Header bar ── */}
+          <View style={styles.header}>
+            <Text style={styles.headerIcon}>🛡</Text>
+            <Text style={styles.headerTitle}>RVK HomeSearch</Text>
           </View>
 
-          <Text style={styles.title}>Forgot Password?</Text>
-          <Text style={styles.subtitle}>
-            No worries! Enter your registered email and we'll send you a reset link.
-          </Text>
+          {/* ── Decorative background blobs ── */}
+          <View style={styles.blob1} />
+          <View style={styles.blob2} />
+          <View style={styles.blob3} />
 
-          {/* Email Input */}
-          <Text style={styles.label}>Email Address</Text>
-          <TextInput
-            placeholder="Enter your email"
-            value={email}
-            onChangeText={setEmail}
-            style={[styles.input, !!error && styles.inputError]}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-            textContentType="emailAddress"
-            autoComplete="email"
-            returnKeyType="done"
-            onSubmitEditing={submitForgotPassword}
-            accessibilityLabel="Email address"
-            accessibilityHint="Enter your registered email address"
-            editable={!loading}
-            testID="forgot-email-input"
-          />
+          {/* ── Main content ── */}
+          <View style={styles.contentArea}>
 
-          {/* Inline Error */}
-          {error ? (
-            <Text
-              style={styles.errorText}
-              accessibilityRole="alert"
-              testID="error-text"
-            >
-              {error}
+            <Text style={styles.title}>Forgot Password</Text>
+            <Text style={styles.subtitle}>
+              Enter your email address to receive a{'\n'}password reset link.
             </Text>
-          ) : null}
 
-          {/* Submit Button */}
-          <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
-            onPress={submitForgotPassword}
-            disabled={loading}
-            accessibilityRole="button"
-            accessibilityLabel={loading ? 'Sending reset link' : 'Send reset link'}
-            accessibilityState={{ busy: loading }}
-            testID="submit-btn"
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" size="small" />
-            ) : (
-              <Text style={styles.btnText}>Send Reset Link</Text>
-            )}
-          </TouchableOpacity>
+            {/* Email label */}
+            <Text style={styles.label}>Email Address</Text>
 
-          {/* Divider */}
-          <View style={styles.dividerRow}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>or</Text>
-            <View style={styles.dividerLine} />
+            {/* Email input */}
+            <TextInput
+              placeholder="Enter your email"
+              placeholderTextColor="#AABBA7"
+              value={email}
+              onChangeText={setEmail}
+              style={[styles.input, !!error && styles.inputError]}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              textContentType="emailAddress"
+              autoComplete="email"
+              returnKeyType="done"
+              onSubmitEditing={submitForgotPassword}
+              accessibilityLabel="Email address"
+              accessibilityHint="Enter your registered email address"
+              editable={!loading}
+              testID="forgot-email-input"
+            />
+
+            {/* Inline Error */}
+            {error ? (
+              <Text
+                style={styles.errorText}
+                accessibilityRole="alert"
+                testID="error-text"
+              >
+                {error}
+              </Text>
+            ) : null}
+
+            {/* Send button */}
+            <TouchableOpacity
+              style={[styles.sendButton, loading && styles.sendButtonDisabled]}
+              onPress={submitForgotPassword}
+              disabled={loading}
+              accessibilityRole="button"
+              accessibilityLabel={loading ? 'Sending reset link' : 'Send'}
+              accessibilityState={{ busy: loading }}
+              testID="submit-btn"
+            >
+              {loading ? (
+                <ActivityIndicator color="#fff" size="small" />
+              ) : (
+                <Text style={styles.sendBtnText}>Send</Text>
+              )}
+            </TouchableOpacity>
+
           </View>
 
-          {/* Back to Login Link */}
-          <TouchableOpacity
-            style={styles.backToLoginRow}
-            onPress={handleBackToLogin}
-            accessibilityRole="link"
-            accessibilityLabel="Back to login"
-            testID="back-to-login-link"
-          >
-            <Text style={styles.backArrowText}>← </Text>
-            <Text style={styles.backToLoginText}>Back to Login</Text>
-          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      {/* ── Bottom Sign In tab ── */}
+      <View style={styles.bottomTab}>
+        <TouchableOpacity
+          style={styles.signInFab}
+          onPress={handleBackToLogin}
+          accessibilityRole="button"
+          accessibilityLabel="Sign In"
+          testID="sign-in-btn"
+        >
+          <Text style={styles.signInFabIcon}>⇥</Text>
+        </TouchableOpacity>
+        <Text style={styles.signInFabLabel}>Sign In</Text>
+      </View>
+
+    </View>
   );
 };
 
 export default ForgotPasswordScreen;
 
+// ── Design tokens ────────────────────────────────────────────
+const GREEN_DARK  = '#1A237E';   // navy blue — header & button (matches screenshot)
+const GREEN_BG    = '#E8F5E9';   // mint green page background
+const CARD_BG     = '#FFFFFF';
+const TEXT_DARK   = '#111827';
+const TEXT_MUTED  = '#6B7A8D';
+const BORDER      = '#D4E8D4';
+const ERROR       = '#D32F2F';
+
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: GREEN_BG,
+  },
   flex: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   scrollContent: {
     flexGrow: 1,
-  },
-  container: {
-    flex: 1,
-    padding: 24,
-    paddingTop: 60,
+    paddingBottom: 100,   // space for bottom tab
   },
 
-  // Back button (top-left)
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#ddd',
+  // ── Header ──────────────────────────────────────────────────
+  header: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 32,
+    paddingTop: Platform.OS === 'ios' ? 56 : 44,
+    paddingBottom: 20,
+    gap: 8,
+    zIndex: 1,
   },
-  backArrow: {
+  headerIcon: {
     fontSize: 18,
-    color: '#333',
+    color: GREEN_DARK,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: GREEN_DARK,
+    letterSpacing: 0.3,
   },
 
-  // Icon
-  iconCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: '#EEF4FF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 24,
-    alignSelf: 'center',
+  // ── Decorative blobs (network-node style from screenshot) ───
+  blob1: {
+    position: 'absolute',
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    backgroundColor: 'rgba(200,230,210,0.55)',
+    top: 180,
+    left: -60,
   },
-  lockIcon: {
-    fontSize: 32,
+  blob2: {
+    position: 'absolute',
+    width: 130,
+    height: 130,
+    borderRadius: 65,
+    backgroundColor: 'rgba(200,230,210,0.45)',
+    top: 260,
+    right: -30,
+  },
+  blob3: {
+    position: 'absolute',
+    width: 90,
+    height: 90,
+    borderRadius: 45,
+    backgroundColor: 'rgba(180,220,195,0.4)',
+    bottom: 160,
+    left: 60,
   },
 
-  // Header text
+  // ── Content area ────────────────────────────────────────────
+  contentArea: {
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    zIndex: 1,
+  },
+
   title: {
     fontSize: 26,
-    fontWeight: 'bold',
-    color: '#111',
+    fontWeight: '800',
+    color: TEXT_DARK,
     textAlign: 'center',
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 14,
-    color: '#888',
+    color: TEXT_MUTED,
     textAlign: 'center',
     lineHeight: 22,
-    marginBottom: 32,
-    paddingHorizontal: 8,
+    marginBottom: 36,
   },
 
   // Label
   label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#333',
+    fontSize: 13,
+    fontWeight: '600',
+    color: TEXT_DARK,
     marginBottom: 8,
   },
 
   // Input
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    marginBottom: 12,
-    paddingHorizontal: 15,
+    borderColor: BORDER,
+    borderRadius: 10,
+    paddingHorizontal: 14,
     height: 50,
     fontSize: 15,
-    color: '#111',
+    color: TEXT_DARK,
+    backgroundColor: CARD_BG,
+    marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   inputError: {
-    borderColor: '#E24B4A',
+    borderColor: ERROR,
   },
   errorText: {
-    color: '#E24B4A',
+    color: ERROR,
     fontSize: 13,
-    marginBottom: 12,
-    marginTop: -4,
+    marginBottom: 10,
   },
 
-  // Button
-  button: {
-    backgroundColor: '#007AFF',
+  // ── Send button ─────────────────────────────────────────────
+  sendButton: {
+    backgroundColor: GREEN_DARK,
     height: 50,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 8,
-    marginTop: 4,
+    marginTop: 8,
+    shadowColor: GREEN_DARK,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
   },
-  buttonDisabled: {
+  sendButtonDisabled: {
     opacity: 0.6,
   },
-  btnText: {
+  sendBtnText: {
     color: '#fff',
-    fontSize: 17,
-    fontWeight: '600',
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 0.4,
   },
 
-  // Divider
-  dividerRow: {
-    flexDirection: 'row',
+  // ── Bottom Sign In tab ──────────────────────────────────────
+  bottomTab: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     alignItems: 'center',
-    marginVertical: 24,
-    gap: 10,
+    paddingBottom: Platform.OS === 'ios' ? 28 : 18,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(200,225,205,0.6)',
+    backgroundColor: GREEN_BG,
   },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#eee',
-  },
-  dividerText: {
-    fontSize: 13,
-    color: '#aaa',
-  },
-
-  // Back to login link
-  backToLoginRow: {
-    flexDirection: 'row',
+  signInFab: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: GREEN_DARK,
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
+    marginBottom: 4,
+    shadowColor: GREEN_DARK,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.35,
+    shadowRadius: 6,
+    elevation: 6,
   },
-  backArrowText: {
-    fontSize: 14,
-    color: '#007AFF',
-    fontWeight: '600',
+  signInFabIcon: {
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: '700',
   },
-  backToLoginText: {
-    fontSize: 14,
-    color: '#007AFF',
+  signInFabLabel: {
+    fontSize: 12,
     fontWeight: '600',
+    color: TEXT_DARK,
+    letterSpacing: 0.2,
   },
 
-  // ── Success state ──────────────────────────
+  // ── Success state ───────────────────────────────────────────
   successContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 32,
+    paddingBottom: 100,
   },
   successIconCircle: {
     width: 80,
     height: 80,
     borderRadius: 40,
     backgroundColor: '#E8F5E9',
+    borderWidth: 2,
+    borderColor: '#4CAF50',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 24,
@@ -345,14 +416,14 @@ const styles = StyleSheet.create({
   },
   successTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#111',
+    fontWeight: '800',
+    color: TEXT_DARK,
     marginBottom: 12,
     textAlign: 'center',
   },
   successMessage: {
     fontSize: 14,
-    color: '#888',
+    color: TEXT_MUTED,
     textAlign: 'center',
     lineHeight: 22,
     marginBottom: 32,
@@ -364,11 +435,11 @@ const styles = StyleSheet.create({
   },
   resendText: {
     fontSize: 14,
-    color: '#888',
+    color: TEXT_MUTED,
   },
   resendLink: {
     fontSize: 14,
-    color: '#007AFF',
-    fontWeight: '600',
+    color: GREEN_DARK,
+    fontWeight: '700',
   },
 });

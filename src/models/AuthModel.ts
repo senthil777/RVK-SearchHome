@@ -1,3 +1,9 @@
+export interface UserPreferences {
+  notificationsEnabled: boolean;
+  language: string;
+  darkMode: boolean;
+}
+
 export interface UserModel {
   id: string;
   firstName: string;
@@ -6,10 +12,11 @@ export interface UserModel {
   address: string;
   createdAt: string;
   updatedAt: string;
+  preferences?: UserPreferences;   // ✅ Added from API response
 }
 
 export interface ApiResponse {
-  status: number;        // API returns 200, not boolean
+  status: number;          // 200 for login, 201 for signup
   message: string;
   accessToken: string;
   user: UserModel;
@@ -26,7 +33,7 @@ export interface SignUpModel {
   email: string;
   address: string;
   password: string;
-  confirmPassword: string;
+  confirmPassword: string;   // only used for validation, NOT sent to API
   profileImage: string | null;
 }
 
@@ -34,7 +41,6 @@ export interface ForgotPasswordModel {
   email: string;
 }
 
-// Separate error shape from success shape
 export interface ApiErrorResponse {
   status: number | boolean;
   message: string;
