@@ -1,17 +1,20 @@
+// src/screens/components/home/HomeHeader.tsx
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 interface Props {
   greeting: string;
-  userName?: string;
+  userName: string;
 }
 
-const HomeHeader = ({ greeting, userName = 'User' }: Props) => (
+const HomeHeader = ({ greeting, userName }: Props) => (
   <View style={styles.container}>
     <View>
       <Text style={styles.greeting}>{greeting} 👋</Text>
       <Text style={styles.name}>Welcome, {userName}!</Text>
     </View>
+
+    {/* ✅ Avatar circle with first letter — matches screenshot */}
     <View style={styles.avatarCircle}>
       <Text style={styles.avatarText}>
         {userName.charAt(0).toUpperCase()}
@@ -27,26 +30,35 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
   },
-  greeting: { fontSize: 13, color: '#888' },
+  greeting: {
+    fontSize: 13,
+    color: '#5A7A5A',
+    fontWeight: '400',
+  },
   name: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#111',
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#111827',
     marginTop: 2,
   },
   avatarCircle: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: '#007AFF',
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#1A237E',    // navy blue — matches screenshot
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#1A237E',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5,
   },
   avatarText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700',
   },
 });

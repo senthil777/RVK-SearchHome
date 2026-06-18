@@ -26,7 +26,7 @@ const SignUpScreen = ({ navigation }: Props) => {
     if (accessToken) {
       navigation.reset({
         index: 0,
-        routes: [{ name: 'MainApp' }],
+        routes: [{ name: 'Login' }],
       });
     }
   }, [accessToken, navigation]);
