@@ -1,4 +1,5 @@
-import React from 'react';
+// src/screens/HomeScreen.tsx
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,7 +7,9 @@ import {
   ActivityIndicator,
   Text,
   RefreshControl,
+  StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useHomeViewModel } from '../viewmodels/HomeViewModel';
 import {
   HomeHeader,
@@ -15,125 +18,201 @@ import {
   SectionHeader,
   PropertyCard,
 } from './components/home';
-import { PropertyModel } from '../models/HomeModel';
+import ListingCard from './components/home/ListingCard';
+import { PropertyModel, ListingModel } from '../models/HomeModel';
+import { UserStorage } from '../storage/UserStorage';
+import { UserModel } from '../models/AuthModel';
 
 const HomeScreen = () => {
   const {
     properties,
+    listings,
     loading,
+    listLoading,
     error,
+    listError,
     greeting,
     searchQuery,
     setSearchQuery,
-    fetchProperties,
+    refreshAll,
   } = useHomeViewModel();
 
+  // ✅ Load user name from local storage
+  const [user, setUser] = useState<UserModel | null>(null);
+
+  useEffect(() => {
+    UserStorage.getUser().then(setUser);
+  }, []);
+
+  const userName = user?.firstName ?? 'User';
+
   const handlePropertyPress = (property: PropertyModel) => {
-    // Navigate to property detail screen
     console.log('Property pressed:', property.id);
   };
 
-  const handleBrowsePress = () => {
-    console.log('Browse all pressed');
+  const handleListingPress = (listing: ListingModel) => {
+    console.log('Listing pressed:', listing.id);
   };
 
-  const handleSeeAllPress = () => {
-    console.log('See all pressed');
-  };
+  const handleBrowsePress = () => console.log('Browse all pressed');
+  const handleSeeAllPress = () => console.log('See all featured');
+  const handleMyListSeeAll = () => console.log('See all my listings');
+
+  // Combined refresh loading
+  const isRefreshing = loading || listLoading;
 
   return (
-    <ScrollView
-      style={styles.flex}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl
-          refreshing={loading}
-          onRefresh={fetchProperties}
-          tintColor="#007AFF"
-          testID="home-refresh-control"
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <StatusBar barStyle="dark-content" backgroundColor="#E8F5E9" />
+
+      <ScrollView
+        style={styles.flex}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={refreshAll}
+            tintColor="#2E6B3E"
+            testID="home-refresh-control"
+          />
+        }
+      >
+        {/* ── Header with user name from storage ── */}
+        <HomeHeader greeting={greeting} userName={userName} />
+
+        {/* ── Search bar ── */}
+        <HomeSearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
         />
-      }
-    >
-      <HomeHeader greeting={greeting} userName="John" />
 
-      <HomeSearchBar
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-      />
+        {/* ── Banner ── */}
+        <HomeBanner onBrowsePress={handleBrowsePress} />
 
-      <HomeBanner onBrowsePress={handleBrowsePress} />
+       
 
-      <SectionHeader
-        title="Featured"
-        onSeeAllPress={handleSeeAllPress}
-      />
+        {/* ════════════════════════════════════════
+            MY LIST SECTION (real API listings)
+        ════════════════════════════════════════ */}
+        <View style={styles.sectionGap} />
 
-      {/* Loading state */}
-      {loading && properties.length === 0 ? (
-        <View style={styles.center}>
-          <ActivityIndicator size="large" color="#007AFF" />
-        </View>
-      ) : null}
-
-      {/* Error state */}
-      {error && !loading ? (
-        <View style={styles.errorBox}>
-          <Text style={styles.errorText}>{error}</Text>
-        </View>
-      ) : null}
-
-      {/* Empty search result */}
-      {!loading && properties.length === 0 && searchQuery.length > 0 ? (
-        <View style={styles.center}>
-          <Text style={styles.emptyIcon}>🔍</Text>
-          <Text style={styles.emptyText}>
-            No properties found for "{searchQuery}"
-          </Text>
-        </View>
-      ) : null}
-
-      {/* Property list */}
-      {properties.map(property => (
-        <PropertyCard
-          key={property.id}
-          property={property}
-          onPress={handlePropertyPress}
+        <SectionHeader
+          title="My List"
+          onSeeAllPress={handleMyListSeeAll}
         />
-      ))}
-    </ScrollView>
+
+        {/* My List loading */}
+        {listLoading && listings.length === 0 ? (
+          <View style={styles.center}>
+            <ActivityIndicator size="large" color="#2E6B3E" />
+            <Text style={styles.loadingText}>Loading your listings...</Text>
+          </View>
+        ) : null}
+
+        {/* My List error */}
+        {listError && !listLoading ? (
+          <View style={styles.errorBox}>
+            <Text style={styles.errorText}>{listError}</Text>
+          </View>
+        ) : null}
+
+        {/* My List empty */}
+        {!listLoading && listings.length === 0 && !listError ? (
+          <View style={styles.emptyCard}>
+            <Text style={styles.emptyIcon}>🏘️</Text>
+            <Text style={styles.emptyTitle}>No listings yet</Text>
+            <Text style={styles.emptySubtitle}>
+              Your saved properties will appear here.
+            </Text>
+          </View>
+        ) : null}
+
+        {/* My List items */}
+        {listings.map(listing => (
+          <ListingCard
+            key={listing.id}
+            item={listing}
+            onPress={handleListingPress}
+          />
+        ))}
+
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 export default HomeScreen;
 
 const styles = StyleSheet.create({
-  flex: { flex: 1, backgroundColor: '#F8F9FB' },
-  content: {
-    padding: 20,
-    paddingTop: 56,
-    paddingBottom: 32,
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#E8F5E9',
   },
+  flex: {
+    flex: 1,
+    backgroundColor: '#E8F5E9',
+  },
+  content: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 100,
+  },
+
+  // Gap between sections
+  sectionGap: {
+    height: 8,
+    marginBottom: 8,
+  },
+
+  // States
   center: {
     alignItems: 'center',
-    paddingVertical: 40,
+    paddingVertical: 32,
   },
-  emptyIcon: { fontSize: 40, marginBottom: 12 },
-  emptyText: {
-    fontSize: 14,
-    color: '#888',
+  loadingText: {
+    marginTop: 10,
+    fontSize: 13,
+    color: '#6B8C6B',
+  },
+  emptyIcon:  { fontSize: 44, marginBottom: 10 },
+  emptyText:  { fontSize: 14, color: '#6B8C6B', textAlign: 'center' },
+
+  emptyCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 28,
+    alignItems: 'center',
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 6,
+  },
+  emptySubtitle: {
+    fontSize: 13,
+    color: '#6B8C6B',
     textAlign: 'center',
+    lineHeight: 20,
   },
+
   errorBox: {
-    backgroundColor: '#FFF0F0',
-    borderRadius: 8,
+    backgroundColor: '#FFEBEE',
+    borderRadius: 10,
     padding: 14,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#F7C1C1',
+    borderColor: '#FFCDD2',
   },
   errorText: {
-    color: '#E24B4A',
+    color: '#D32F2F',
     fontSize: 13,
     textAlign: 'center',
   },

@@ -1,10 +1,8 @@
+// src/screens/components/home/HomeSearchBar.tsx
 import React from 'react';
 import {
-  View,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
+  View, TextInput, StyleSheet,
+  TouchableOpacity, Text,
 } from 'react-native';
 
 interface Props {
@@ -18,14 +16,13 @@ const HomeSearchBar = ({ value, onChangeText }: Props) => (
     <TextInput
       style={styles.input}
       placeholder="Search properties..."
-      placeholderTextColor="#bbb"
+      placeholderTextColor="#AABBA7"
       value={value}
       onChangeText={onChangeText}
       autoCapitalize="none"
       autoCorrect={false}
       returnKeyType="search"
       accessibilityLabel="Search properties"
-      accessibilityHint="Type to filter properties by name or address"
       testID="home-search-input"
     />
     {value.length > 0 && (
@@ -46,25 +43,19 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 10,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
     paddingHorizontal: 14,
-    paddingVertical: 12,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#eee',
+    paddingVertical: 13,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 2,
     gap: 8,
   },
-  icon: { fontSize: 15 },
-  input: {
-    flex: 1,
-    fontSize: 14,
-    color: '#111',
-    padding: 0,
-  },
-  clearIcon: {
-    fontSize: 14,
-    color: '#aaa',
-    paddingHorizontal: 4,
-  },
+  icon:  { fontSize: 15, color: '#6B8C6B' },
+  input: { flex: 1, fontSize: 14, color: '#111827', padding: 0 },
+  clearIcon: { fontSize: 13, color: '#AABBA7', paddingHorizontal: 4 },
 });

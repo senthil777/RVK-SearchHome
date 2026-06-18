@@ -15,11 +15,7 @@ export type RootStackParamList = {
   ForgotPassword: undefined;
   SignUp: undefined;
   MainApp: undefined;   // ← bottom tabs live here
-  AddHomeScreen: {
-    image: string;
-    latitude: number;
-    longitude: number;
-  };
+  AddHomeScreen: undefined;
 
 };
 
