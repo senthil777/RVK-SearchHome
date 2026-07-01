@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {View, Text, StyleSheet, Platform,Image} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+
 import HomeScreen from '../screens/HomeScreen';
 import MyListScreen from '../screens/MyListScreen';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -13,101 +15,147 @@ export type BottomTabParamList = {
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
-// ── Custom tab icon ───────────────────────────────────────────────
 interface TabIconProps {
-  emoji: string;
+  icon: any;
   label: string;
   focused: boolean;
 }
 
-const TabIcon = ({ emoji, label, focused }: TabIconProps) => (
+const TabIcon = ({
+  icon,
+  label,
+  focused,
+}: TabIconProps) => (
   <View style={tabStyles.wrapper}>
-    <Text style={[tabStyles.emoji, focused && tabStyles.emojiFocused]}>
-      {emoji}
-    </Text>
-    <Text style={[tabStyles.label, focused && tabStyles.labelFocused]}>
+    <Image
+      source={icon}
+      style={[
+        tabStyles.icon,
+        {
+          opacity: focused ? 1 : 0.5,
+        },
+        {
+      tintColor: focused ? '#1A237E' : '#aaa',
+    },
+
+      ]}
+      resizeMode="contain"
+    />
+
+    <Text
+      style={[
+        tabStyles.label,
+        focused && tabStyles.labelFocused,
+      ]}>
       {label}
     </Text>
   </View>
 );
 
+const BottomTabNavigator = () => {
+  return (
+    <SafeAreaView
+      style={styles.container}
+      edges={['bottom']}>
+      <Tab.Navigator
+        screenOptions={{
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarStyle: {
+            backgroundColor: '#fff',
+            borderTopWidth: 0.5,
+            borderTopColor: '#eee',
+            height: Platform.OS === 'ios' ? 85 : 70,
+            paddingBottom: Platform.OS === 'ios' ? 20 : 8,
+            elevation: 12,
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: -3,
+            },
+            shadowOpacity: 0.06,
+            shadowRadius: 8,
+          },
+        }}>
+        <Tab.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            tabBarIcon: ({focused}) => (
+              <TabIcon
+                icon={require('../assets/icons/home.png')}
+                label="Home"
+                focused={focused}
+              />
+            ),
+          }}
+        />
+
+        <Tab.Screen
+          name="MyList"
+          component={MyListScreen}
+          options={{
+            tabBarIcon: ({focused}) => (
+              <TabIcon
+                icon={require('../assets/icons/myList.png')}
+                label="My List"
+                focused={focused}
+              />
+            ),
+          }}
+        />
+
+        <Tab.Screen
+          name="Profile"
+          component={ProfileScreen}
+          options={{
+            tabBarIcon: ({focused}) => (
+              <TabIcon
+                icon={require('../assets/icons/profile.png')}
+                label="Profile"
+                focused={focused}
+              />
+            ),
+          }}
+        />
+      </Tab.Navigator>
+    </SafeAreaView>
+  );
+};
+
+export default BottomTabNavigator;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+});
+
 const tabStyles = StyleSheet.create({
+
   wrapper: {
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: 6,
+    marginTop:16,
     width: 70,
   },
-  emoji: {
-    fontSize: 22,
-    opacity: 0.5,
+
+  icon: {
+    width: 20,
+    height: 20,
   },
-  emojiFocused: {
-    opacity: 1,
-  },
+
   label: {
     fontSize: 11,
     marginTop: 3,
     color: '#aaa',
     fontWeight: '500',
   },
+
   labelFocused: {
-    color: '#007AFF',
+    color: '#1A237E',
   },
+
 });
-
-// ── Navigator ─────────────────────────────────────────────────────
-const BottomTabNavigator = () => {
-  return (
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-        tabBarShowLabel: false,
-        tabBarStyle: {
-          backgroundColor: '#fff',
-          borderTopWidth: 0.5,
-          borderTopColor: '#eee',
-          height: Platform.OS === 'ios' ? 85 : 65,
-          paddingBottom: Platform.OS === 'ios' ? 24 : 8,
-          elevation: 12,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: -3 },
-          shadowOpacity: 0.06,
-          shadowRadius: 8,
-        },
-      }}
-    >
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon emoji="🏠" label="Home" focused={focused} />
-          ),
-        }}
-      />
-
-      <Tab.Screen
-        name="MyList"
-        component={MyListScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon emoji="📋" label="My List" focused={focused} />
-          ),
-        }}
-      />
-
-      <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon emoji="👤" label="Profile" focused={focused} />
-          ),
-        }}
-      />
-    </Tab.Navigator>
-  );
-};
-
-export default BottomTabNavigator;

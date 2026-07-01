@@ -37,3 +37,18 @@ export interface MyListResponse {
   message: string;
   listings: ListingModel[];
 }
+
+// Add these to your existing src/models/HomeModel.ts
+
+export interface CreateListingResponse {
+  status: number;
+  message: string;
+  property: ListingModel;
+}
+
+export interface CreateListingPayload {
+  imageUri: string;
+  latitude: number;
+  longitude: number;
+  description: string;
+}

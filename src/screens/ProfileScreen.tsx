@@ -9,8 +9,8 @@ import {
   StatusBar,
   Alert,
 } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import { UserStorage } from '../storage/UserStorage';
@@ -27,23 +27,24 @@ interface MenuItem {
   isToggle?: boolean;
 }
 
+// ── Menu items with MaterialIcons names ────────────────────────
 const ACCOUNT_ITEMS: MenuItem[] = [
-  { icon: 'person-outline',         label: 'Edit Profile' },
-  { icon: 'lock-closed-outline',    label: 'Change Password' },
-  { icon: 'mail-outline',           label: 'Email Preferences' },
+  { icon: 'person-outline',     label: 'Edit Profile' },
+  { icon: 'lock-outline',       label: 'Change Password' },
+  { icon: 'mail-outline',       label: 'Email Preferences' },
 ];
 
 const PREFERENCE_ITEMS: MenuItem[] = [
-  { icon: 'notifications-outline',  label: 'Notifications' },
-  { icon: 'globe-outline',          label: 'Language', sublabel: 'English' },
-  { icon: 'moon-outline',           label: 'Dark Mode', isToggle: true },
+  { icon: 'notifications-none', label: 'Notifications' },
+  { icon: 'language',           label: 'Language', sublabel: 'English' },
+  { icon: 'dark-mode',          label: 'Dark Mode', isToggle: true },
 ];
 
 const SUPPORT_ITEMS: MenuItem[] = [
-  { icon: 'help-circle-outline',    label: 'Help & FAQ' },
+  { icon: 'help-outline',           label: 'Help & FAQ' },
   { icon: 'star-outline',           label: 'Rate the App' },
-  { icon: 'shield-checkmark-outline', label: 'Privacy Policy' },
-  { icon: 'document-text-outline',  label: 'Terms of Service' },
+  { icon: 'privacy-tip',            label: 'Privacy Policy' },
+  { icon: 'description',            label: 'Terms of Service' },
 ];
 
 // ── Design tokens (matches app theme) ──────────────────────────
@@ -129,7 +130,7 @@ const ProfileScreen = ({ navigation }: Props) => {
           activeOpacity={item.isToggle ? 1 : 0.6}
         >
           <View style={styles.menuLeft}>
-            <Ionicons
+            <MaterialIcons
               name={item.icon}
               size={20}
               color={GREEN_NAVY}
@@ -152,7 +153,7 @@ const ProfileScreen = ({ navigation }: Props) => {
               testID="dark-mode-switch"
             />
           ) : (
-            <Ionicons name="chevron-forward" size={18} color="#C4D4C4" />
+            <MaterialIcons name="chevron-right" size={20} color="#C4D4C4" />
           )}
         </TouchableOpacity>
       ))}
@@ -172,7 +173,7 @@ const ProfileScreen = ({ navigation }: Props) => {
           accessibilityLabel="Go back"
           testID="back-btn"
         >
-          <Ionicons name="arrow-back" size={24} color={TEXT_DARK} />
+          <MaterialIcons name="arrow-back" size={22} color={TEXT_DARK} />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>Profile</Text>
@@ -184,7 +185,7 @@ const ProfileScreen = ({ navigation }: Props) => {
           accessibilityLabel="Settings"
           testID="settings-btn"
         >
-          <Ionicons name="settings-outline" size={22} color={TEXT_DARK} />
+          <MaterialIcons name="settings" size={22} color={TEXT_DARK} />
         </TouchableOpacity>
       </View>
 
@@ -206,7 +207,7 @@ const ProfileScreen = ({ navigation }: Props) => {
               accessibilityLabel="Edit avatar"
               testID="edit-avatar-btn"
             >
-              <Ionicons name="pencil" size={12} color={GREEN_NAVY} />
+              <MaterialIcons name="edit" size={13} color={GREEN_NAVY} />
             </TouchableOpacity>
           </View>
 
@@ -219,7 +220,7 @@ const ProfileScreen = ({ navigation }: Props) => {
           {/* Address shown if available */}
           {user?.address ? (
             <View style={styles.addressRow}>
-              <Ionicons name="location-outline" size={13} color={TEXT_MUTED} />
+              <MaterialIcons name="location-on" size={14} color={TEXT_MUTED} />
               <Text style={styles.addressText} numberOfLines={1}>
                 {user.address}
               </Text>
@@ -273,7 +274,7 @@ const ProfileScreen = ({ navigation }: Props) => {
             testID="logout-btn"
             activeOpacity={0.7}
           >
-            <Ionicons name="log-out-outline" size={20} color={ERROR} />
+            <MaterialIcons name="logout" size={20} color={ERROR} />
             <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
         </View>

@@ -1,4 +1,4 @@
-package com.homesearch
+package com.rvk.homesearchapp
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

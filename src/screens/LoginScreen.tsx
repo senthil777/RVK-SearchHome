@@ -1,5 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
 import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+import {
   View,
   TextInput,
   TouchableOpacity,
@@ -16,8 +20,10 @@ import {
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import { useLoginViewModel } from '../viewmodels/LoginViewModel';
+import BannerAds from '../ads/BannerAds';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
+
 
 const LoginScreen = ({ navigation }: Props) => {
   const {
@@ -33,6 +39,12 @@ const LoginScreen = ({ navigation }: Props) => {
 
   const passwordRef   = useRef<TextInputType>(null);
   const [showPassword, setShowPassword] = useState(false);
+useEffect(() => {
+  GoogleSignin.configure({
+    webClientId: '918131070372-nhd5b4a4krj4005ql9esudvvnnbljene.apps.googleusercontent.com',  // ✅ new web client
+    offlineAccess: true,
+  });
+}, []);
 
   useEffect(() => {
     if (accessToken) {
@@ -42,7 +54,28 @@ const LoginScreen = ({ navigation }: Props) => {
 
   const handleForgotPassword = () => navigation.navigate('ForgotPassword');
   const handleSignup         = () => navigation.navigate('SignUp');
-  const handleGoogleLogin    = () => { /* TODO: Google OAuth */ };
+  const handleGoogleLogin = async () => {
+  try {
+    await GoogleSignin.hasPlayServices({
+      showPlayServicesUpdateDialog: true,
+    });
+
+    // Clear any cached sign-in
+    await GoogleSignin.signOut().catch(() => {});
+
+    const result = await GoogleSignin.signIn();
+
+    console.log('Google Result:', result);
+
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'MainApp' }],
+    });
+
+  } catch (error: any) {
+    console.log('Google Error:', JSON.stringify(error, null, 2));
+  }
+};
   const handleAppleLogin     = () => { /* TODO: Apple Sign-In */ };
 
   return (
@@ -218,6 +251,7 @@ const LoginScreen = ({ navigation }: Props) => {
               <Text style={styles.registerIcon}>👤+</Text>
               <Text style={styles.registerText}>Register</Text>
             </TouchableOpacity>
+            <BannerAds />
           </View>
 
         </ScrollView>

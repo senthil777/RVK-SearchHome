@@ -1,4 +1,4 @@
-package com.homesearch
+package com.rvk.homesearchapp
 
 import android.app.Application
 import com.facebook.react.PackageList
