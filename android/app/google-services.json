@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "918131070372",
+    "project_id": "rvkhomesearch",
+    "storage_bucket": "rvkhomesearch.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:918131070372:android:40f9aad7001d5d759a5d31",
+        "android_client_info": {
+          "package_name": "com.rvk.homesearchapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "918131070372-eadpa6ovcltfmd618ngtc5kf1giv2lor.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rvk.homesearchapp",
+            "certificate_hash": "e99c25c2f961251fbe3fc1ea0b6704b3df662e11"
+          }
+        },
+        {
+          "client_id": "918131070372-nhd5b4a4krj4005ql9esudvvnnbljene.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhZ62eBO9JKeb5JGVn0KsvVfkKlYvdk88"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "918131070372-nhd5b4a4krj4005ql9esudvvnnbljene.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "918131070372-1vcc402im0386vpknhliu2b7i3vscfi3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.rvk.homesearchapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

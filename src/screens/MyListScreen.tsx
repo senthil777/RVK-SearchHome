@@ -9,6 +9,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 
@@ -139,7 +140,7 @@ const MyListScreen = ({ navigation }: Props) => {
           accessibilityLabel="Go back"
           testID="back-btn"
         >
-          <Text style={styles.backArrow}>←</Text>
+          <MaterialIcons name="arrow-back" size={24} color={TEXT_DARK} />
         </TouchableOpacity>
 
         <Text style={styles.topHeaderTitle}>My List</Text>
